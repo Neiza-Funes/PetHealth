@@ -2,34 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/fondo_pethealth"
     android:gravity="center"
-    android:padding="24dp"
-    android:background="@color/fondo_pethealth">
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_pethealth_logo" />
 
     <TextView
-        android:id="@+id/txtTitulo"
+        android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/app_name"
-        android:textColor="@color/texto_principal"
-        android:textSize="30sp"
+        android:textColor="@color/rojo_oscuro"
+        android:textSize="34sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/txtDescripcion"
+        android:id="@+id/textSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="@string/mensaje_inicio"
+        android:gravity="center"
+        android:text="@string/main_subtitle"
         android:textColor="@color/texto_secundario"
         android:textSize="16sp" />
 
     <Button
-        android:id="@+id/btnComenzar"
-        android:layout_width="wrap_content"
+        android:id="@+id/buttonStart"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/comenzar" />
+        android:layout_marginTop="34dp"
+        android:background="@drawable/bg_boton_rojo"
+        android:backgroundTint="@null"
+        android:text="@string/start_button"
+        android:textColor="@color/blanco"
+        android:textStyle="bold" />
 
 </LinearLayout>

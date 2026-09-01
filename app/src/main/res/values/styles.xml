@@ -2,8 +2,10 @@
 <resources>
     <style name="Theme.PetHealth" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/rojo_principal</item>
+        <item name="android:navigationBarColor">@color/blanco</item>
+        <item name="android:statusBarColor">@color/rosado_claro</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@color/fondo_pethealth</item>
-        <item name="android:navigationBarColor">@color/fondo_pethealth</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>

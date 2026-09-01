@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fondo_pethealth">#F4FAF8</color>
-    <color name="texto_principal">#263238</color>
-    <color name="texto_secundario">#546E7A</color>
+    <color name="rojo_principal">#D94A5A</color>
+    <color name="rojo_oscuro">#A92E3D</color>
+    <color name="rosado_principal">#F08CA0</color>
+    <color name="rosado_claro">#FCE7EC</color>
+    <color name="rosado_muy_claro">#FFF4F6</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="fondo_pethealth">#FFF8FA</color>
+    <color name="texto_principal">#35282B</color>
+    <color name="texto_secundario">#766368</color>
+    <color name="borde_suave">#E9C8D0</color>
 </resources>

@@ -8,6 +8,18 @@
         android:theme="@style/Theme.PetHealth">
 
         <activity
+            android:name=".InicioActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistroActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

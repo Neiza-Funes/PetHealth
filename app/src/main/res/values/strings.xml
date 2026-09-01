@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PetHealth</string>
-    <string name="mensaje_inicio">Cuida la salud de tus mascotas</string>
-    <string name="comenzar">Comenzar</string>
+    <string name="main_subtitle">El bienestar de tu mascota en un solo lugar</string>
+    <string name="start_button">COMENZAR</string>
+
+    <string name="login_subtitle">Cuida y organiza la salud de tus mascotas</string>
+    <string name="correo">Correo electrónico</string>
+    <string name="correo_hint">correo@ejemplo.com</string>
+    <string name="password">Contraseña</string>
+    <string name="password_hint">Mínimo 6 caracteres</string>
+    <string name="mostrar_password">Mostrar contraseña</string>
+    <string name="ocultar_password">Ocultar contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="go_register">¿No tienes cuenta? Regístrate</string>
+
+    <string name="registro_titulo">Nuevo Registro</string>
+    <string name="registro_subtitulo">Únete y comienza a cuidar a tus mascotas</string>
+    <string name="nombre_completo">Nombre completo</string>
+    <string name="nombre_hint">Nombre y apellido</string>
+    <string name="telefono">Teléfono</string>
+    <string name="telefono_hint">+56 9 1234 5678</string>
+    <string name="confirmar_password">Confirmar contraseña</string>
+    <string name="confirmar_password_hint">Repite tu contraseña</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="go_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <string name="inicio_titulo">Bienvenido a PetHealth</string>
+    <string name="inicio_subtitulo">Todo lo necesario para cuidar a tu mascota</string>
+    <string name="mis_mascotas">Mis mascotas</string>
+    <string name="registrar_mascota">Registrar mascota</string>
+    <string name="proximos_controles">Próximos controles</string>
+    <string name="vacunas">Vacunas</string>
+
+    <string name="error_correo_vacio">Ingrese su correo</string>
+    <string name="error_correo_invalido">Correo no válido</string>
+    <string name="error_password_vacio">Ingrese su contraseña</string>
+    <string name="error_password_corta">Mínimo 6 caracteres</string>
+    <string name="error_nombre_vacio">Ingrese su nombre</string>
+    <string name="error_telefono_vacio">Ingrese su teléfono</string>
+    <string name="error_confirmar_password">Confirme su contraseña</string>
+    <string name="error_password_no_coincide">Las contraseñas no coinciden</string>
+
+    <string name="toast_login_ok">Inicio de sesión correcto</string>
+    <string name="toast_registro_ok">Cuenta creada correctamente</string>
+    <string name="toast_proximamente">Función disponible en próximos avances</string>
+    <string name="toast_recuperar">Recuperación de contraseña disponible en próximos avances</string>
 </resources>
