@@ -46,4 +46,38 @@
     <string name="toast_registro_ok">Cuenta creada correctamente</string>
     <string name="toast_proximamente">Función disponible en próximos avances</string>
     <string name="toast_recuperar">Recuperación de contraseña disponible en próximos avances</string>
+
+    <string name="mis_mascotas_titulo">Mis mascotas</string>
+    <string name="mis_mascotas_subtitulo">Consulta y organiza los perfiles de tus mascotas</string>
+    <string name="mascota_luna">Luna</string>
+    <string name="luna_especie">Especie: Perro</string>
+    <string name="luna_edad">Edad: 3 años</string>
+    <string name="mascota_milo">Milo</string>
+    <string name="milo_especie">Especie: Gato</string>
+    <string name="milo_edad">Edad: 2 años</string>
+    <string name="agregar_mascota">+ Registrar mascota</string>
+
+    <string name="registrar_mascota_titulo">Registrar mascota</string>
+    <string name="registrar_mascota_subtitulo">Agrega la información básica de tu mascota</string>
+    <string name="nombre_mascota">Nombre de la mascota</string>
+    <string name="nombre_mascota_hint">Ejemplo: Luna</string>
+    <string name="especie_mascota">Especie</string>
+    <string name="edad_mascota">Edad</string>
+    <string name="edad_mascota_hint">Edad en años</string>
+    <string name="raza_mascota">Raza</string>
+    <string name="raza_mascota_hint">Opcional</string>
+    <string name="guardar_mascota">Guardar mascota</string>
+    <string name="error_nombre_mascota">Ingrese el nombre de la mascota</string>
+    <string name="error_edad_mascota">Ingrese la edad de la mascota</string>
+    <string name="error_edad_invalida">Ingrese una edad válida</string>
+    <string name="toast_mascota_registrada">Mascota registrada correctamente</string>
+    <string name="formato_especie">Especie: %1$s</string>
+    <string name="formato_edad">Edad: %1$s años</string>
+    <string name="formato_raza">Raza: %1$s</string>
+
+    <string-array name="especies_mascota">
+        <item>Perro</item>
+        <item>Gato</item>
+        <item>Otro</item>
+    </string-array>
 </resources>

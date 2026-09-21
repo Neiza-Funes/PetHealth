@@ -8,6 +8,14 @@
         android:theme="@style/Theme.PetHealth">
 
         <activity
+            android:name=".RegistrarMascotaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MisMascotasActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".InicioActivity"
             android:exported="false" />
 
