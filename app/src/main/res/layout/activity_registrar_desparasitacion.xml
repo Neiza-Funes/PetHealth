@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo_pethealth"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/registrar_desparasitacion_titulo"
+            android:textColor="@color/rojo_oscuro"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/registrar_desparasitacion_subtitulo"
+            android:textColor="@color/texto_secundario"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nombre_mascota"
+                android:textColor="@color/texto_principal"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtMascotaDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="@string/nombre_mascota_hint"
+                android:inputType="textCapWords"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/producto_desparasitacion"
+                android:textColor="@color/texto_principal"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtProductoDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="@string/producto_desparasitacion_hint"
+                android:inputType="textCapSentences"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/fecha_desparasitacion"
+                android:textColor="@color/texto_principal"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtFechaDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="@string/fecha_desparasitacion_hint"
+                android:inputType="date"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/proxima_desparasitacion"
+                android:textColor="@color/texto_principal"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtProximaDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:hint="@string/proxima_desparasitacion_hint"
+                android:inputType="date"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/observacion_desparasitacion"
+                android:textColor="@color/texto_principal"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtObservacionDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:gravity="top|start"
+                android:hint="@string/observacion_desparasitacion_hint"
+                android:inputType="textCapSentences|textMultiLine"
+                android:padding="14dp" />
+
+            <Button
+                android:id="@+id/btnGuardarDesparasitacion"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_boton_rosado"
+                android:backgroundTint="@null"
+                android:text="@string/guardar_desparasitacion"
+                android:textColor="@color/blanco"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -16,6 +16,7 @@ public class InicioActivity extends Activity {
         Button btnRegistrarMascota = findViewById(R.id.btnRegistrarMascota);
         Button btnProximosControles = findViewById(R.id.btnProximosControles);
         Button btnVacunas = findViewById(R.id.btnVacunas);
+        Button btnDesparasitacion = findViewById(R.id.btnDesparasitacion);
 
         btnMisMascotas.setOnClickListener(v -> {
             Intent intent = new Intent(InicioActivity.this, MisMascotasActivity.class);
@@ -34,6 +35,11 @@ public class InicioActivity extends Activity {
 
         btnVacunas.setOnClickListener(v -> {
             Intent intent = new Intent(InicioActivity.this, VacunasActivity.class);
+            startActivity(intent);
+        });
+
+        btnDesparasitacion.setOnClickListener(v -> {
+            Intent intent = new Intent(InicioActivity.this, DesparasitacionActivity.class);
             startActivity(intent);
         });
     }

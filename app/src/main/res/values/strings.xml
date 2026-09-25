@@ -32,6 +32,7 @@
     <string name="registrar_mascota">Registrar mascota</string>
     <string name="proximos_controles">Próximos controles</string>
     <string name="vacunas">Vacunas</string>
+    <string name="desparasitacion">Desparasitación</string>
 
     <string name="error_correo_vacio">Ingrese su correo</string>
     <string name="error_correo_invalido">Correo no válido</string>
@@ -137,5 +138,36 @@
     <string name="formato_tipo_control">Control: %1$s</string>
     <string name="formato_fecha_control">Fecha: %1$s</string>
     <string name="formato_observacion_control">Observación: %1$s</string>
+
+    <!-- Avance 06: módulo básico de desparasitación -->
+    <string name="desparasitacion_titulo">Desparasitación</string>
+    <string name="desparasitacion_subtitulo">Consulta y registra la desparasitación de tus mascotas</string>
+    <string name="luna_producto_desparasitacion">Producto: Antiparasitario oral</string>
+    <string name="luna_fecha_desparasitacion">Aplicación: 20/09/2026</string>
+    <string name="luna_proxima_desparasitacion">Próxima: 20/12/2026</string>
+    <string name="milo_producto_desparasitacion">Producto: Pipeta antiparasitaria</string>
+    <string name="milo_fecha_desparasitacion">Aplicación: 10/09/2026</string>
+    <string name="milo_proxima_desparasitacion">Próxima: 10/12/2026</string>
+    <string name="registrar_desparasitacion">+ Registrar desparasitación</string>
+    <string name="registrar_desparasitacion_titulo">Registrar desparasitación</string>
+    <string name="registrar_desparasitacion_subtitulo">Agrega un registro básico de desparasitación</string>
+    <string name="producto_desparasitacion">Producto o medicamento</string>
+    <string name="producto_desparasitacion_hint">Ejemplo: Antiparasitario oral</string>
+    <string name="fecha_desparasitacion">Fecha de aplicación</string>
+    <string name="fecha_desparasitacion_hint">DD/MM/AAAA</string>
+    <string name="proxima_desparasitacion">Próxima desparasitación</string>
+    <string name="proxima_desparasitacion_hint">DD/MM/AAAA</string>
+    <string name="observacion_desparasitacion">Observación</string>
+    <string name="observacion_desparasitacion_hint">Opcional</string>
+    <string name="guardar_desparasitacion">Guardar desparasitación</string>
+    <string name="error_mascota_desparasitacion">Ingrese el nombre de la mascota</string>
+    <string name="error_producto_desparasitacion">Ingrese el producto o medicamento</string>
+    <string name="error_fecha_desparasitacion">Ingrese la fecha de aplicación</string>
+    <string name="error_proxima_desparasitacion">Ingrese la próxima fecha</string>
+    <string name="toast_desparasitacion_registrada">Desparasitación registrada correctamente</string>
+    <string name="formato_producto_desparasitacion">Producto: %1$s</string>
+    <string name="formato_fecha_desparasitacion">Aplicación: %1$s</string>
+    <string name="formato_proxima_desparasitacion">Próxima: %1$s</string>
+    <string name="formato_observacion_desparasitacion">Observación: %1$s</string>
 
 </resources>
