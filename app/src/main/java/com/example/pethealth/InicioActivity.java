@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class InicioActivity extends Activity {
 
@@ -28,7 +27,10 @@ public class InicioActivity extends Activity {
             startActivity(intent);
         });
 
-        btnProximosControles.setOnClickListener(v -> mostrarProximamente());
+        btnProximosControles.setOnClickListener(v -> {
+            Intent intent = new Intent(InicioActivity.this, ControlesActivity.class);
+            startActivity(intent);
+        });
 
         btnVacunas.setOnClickListener(v -> {
             Intent intent = new Intent(InicioActivity.this, VacunasActivity.class);
@@ -36,7 +38,4 @@ public class InicioActivity extends Activity {
         });
     }
 
-    private void mostrarProximamente() {
-        Toast.makeText(this, R.string.toast_proximamente, Toast.LENGTH_SHORT).show();
-    }
 }

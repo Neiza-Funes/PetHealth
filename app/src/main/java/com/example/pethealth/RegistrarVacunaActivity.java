@@ -9,6 +9,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class RegistrarVacunaActivity extends Activity {
 
     private EditText edtMascota;
@@ -62,6 +66,12 @@ public class RegistrarVacunaActivity extends Activity {
             return;
         }
 
+        if (!fechaValida(fecha)) {
+            edtFecha.setError(getString(R.string.error_fecha_invalida));
+            edtFecha.requestFocus();
+            return;
+        }
+
         Toast.makeText(this, R.string.toast_vacuna_registrada, Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(RegistrarVacunaActivity.this, VacunasActivity.class);
@@ -71,5 +81,20 @@ public class RegistrarVacunaActivity extends Activity {
         intent.putExtra("estado", estado);
         startActivity(intent);
         finish();
+    }
+
+    private boolean fechaValida(String fecha) {
+        if (!fecha.matches("\\d{2}/\\d{2}/\\d{4}")) {
+            return false;
+        }
+
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        formato.setLenient(false);
+        try {
+            formato.parse(fecha);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 }
