@@ -112,4 +112,30 @@
         <item>Aplicada</item>
     </string-array>
 
+    <!-- Avance 05: módulo básico de próximos controles -->
+    <string name="controles_titulo">Próximos controles</string>
+    <string name="controles_subtitulo">Revisa y registra los controles próximos de tus mascotas</string>
+    <string name="luna_tipo_control">Control: Revisión general</string>
+    <string name="luna_fecha_control">Fecha: 05/10/2026</string>
+    <string name="milo_tipo_control">Control: Control preventivo</string>
+    <string name="milo_fecha_control">Fecha: 12/10/2026</string>
+    <string name="registrar_control">+ Registrar control</string>
+    <string name="registrar_control_titulo">Registrar control</string>
+    <string name="registrar_control_subtitulo">Agrega un próximo control de forma sencilla</string>
+    <string name="tipo_control">Tipo de control</string>
+    <string name="tipo_control_hint">Ejemplo: Revisión general</string>
+    <string name="fecha_control">Fecha del control</string>
+    <string name="fecha_control_hint">DD/MM/AAAA</string>
+    <string name="observacion_control">Observación</string>
+    <string name="observacion_control_hint">Opcional</string>
+    <string name="guardar_control">Guardar control</string>
+    <string name="error_mascota_control">Ingrese el nombre de la mascota</string>
+    <string name="error_tipo_control">Ingrese el tipo de control</string>
+    <string name="error_fecha_control">Ingrese la fecha del control</string>
+    <string name="error_fecha_invalida">Use una fecha válida con formato DD/MM/AAAA</string>
+    <string name="toast_control_registrado">Control registrado correctamente</string>
+    <string name="formato_tipo_control">Control: %1$s</string>
+    <string name="formato_fecha_control">Fecha: %1$s</string>
+    <string name="formato_observacion_control">Observación: %1$s</string>
+
 </resources>
