@@ -32,6 +32,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".RegistrarDesparasitacionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DesparasitacionActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".InicioActivity"
             android:exported="false" />
 
