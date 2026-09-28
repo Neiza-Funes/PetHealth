@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PetHealth">
+
+        <activity
+            android:name=".EditarMascotaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DetalleMascotaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrarControlActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ControlesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrarMascotaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MisMascotasActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrarVacunaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".VacunasActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrarDesparasitacionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DesparasitacionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".InicioActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistroActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
