@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PetHealth</string>
+    <string name="main_subtitle">El bienestar de tu mascota en un solo lugar</string>
+    <string name="start_button">COMENZAR</string>
+
+    <string name="login_subtitle">Cuida y organiza la salud de tus mascotas</string>
+    <string name="correo">Correo electrónico</string>
+    <string name="correo_hint">correo@ejemplo.com</string>
+    <string name="password">Contraseña</string>
+    <string name="password_hint">Mínimo 6 caracteres</string>
+    <string name="mostrar_password">Mostrar contraseña</string>
+    <string name="ocultar_password">Ocultar contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="go_register">¿No tienes cuenta? Regístrate</string>
+
+    <string name="registro_titulo">Nuevo Registro</string>
+    <string name="registro_subtitulo">Únete y comienza a cuidar a tus mascotas</string>
+    <string name="nombre_completo">Nombre completo</string>
+    <string name="nombre_hint">Nombre y apellido</string>
+    <string name="telefono">Teléfono</string>
+    <string name="telefono_hint">+56 9 1234 5678</string>
+    <string name="confirmar_password">Confirmar contraseña</string>
+    <string name="confirmar_password_hint">Repite tu contraseña</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="go_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <string name="inicio_titulo">Bienvenido a PetHealth</string>
+    <string name="inicio_subtitulo">Todo lo necesario para cuidar a tu mascota</string>
+    <string name="mis_mascotas">Mis mascotas</string>
+    <string name="registrar_mascota">Registrar mascota</string>
+    <string name="proximos_controles">Próximos controles</string>
+    <string name="vacunas">Vacunas</string>
+    <string name="desparasitacion">Desparasitación</string>
+
+    <string name="error_correo_vacio">Ingrese su correo</string>
+    <string name="error_correo_invalido">Correo no válido</string>
+    <string name="error_password_vacio">Ingrese su contraseña</string>
+    <string name="error_password_corta">Mínimo 6 caracteres</string>
+    <string name="error_nombre_vacio">Ingrese su nombre</string>
+    <string name="error_telefono_vacio">Ingrese su teléfono</string>
+    <string name="error_confirmar_password">Confirme su contraseña</string>
+    <string name="error_password_no_coincide">Las contraseñas no coinciden</string>
+
+    <string name="toast_login_ok">Inicio de sesión correcto</string>
+    <string name="toast_registro_ok">Cuenta creada correctamente</string>
+    <string name="toast_proximamente">Función disponible en próximos avances</string>
+    <string name="toast_recuperar">Recuperación de contraseña disponible en próximos avances</string>
+
+    <string name="mis_mascotas_titulo">Mis mascotas</string>
+    <string name="mis_mascotas_subtitulo">Consulta y organiza los perfiles de tus mascotas</string>
+    <string name="mascota_luna">Luna</string>
+    <string name="luna_especie">Especie: Perro</string>
+    <string name="luna_edad">Edad: 3 años</string>
+    <string name="mascota_milo">Milo</string>
+    <string name="milo_especie">Especie: Gato</string>
+    <string name="milo_edad">Edad: 2 años</string>
+    <string name="agregar_mascota">+ Registrar mascota</string>
+
+    <string name="registrar_mascota_titulo">Registrar mascota</string>
+    <string name="registrar_mascota_subtitulo">Agrega la información básica de tu mascota</string>
+    <string name="nombre_mascota">Nombre de la mascota</string>
+    <string name="nombre_mascota_hint">Ejemplo: Luna</string>
+    <string name="especie_mascota">Especie</string>
+    <string name="edad_mascota">Edad</string>
+    <string name="edad_mascota_hint">Edad en años</string>
+    <string name="raza_mascota">Raza</string>
+    <string name="raza_mascota_hint">Opcional</string>
+    <string name="guardar_mascota">Guardar mascota</string>
+    <string name="error_nombre_mascota">Ingrese el nombre de la mascota</string>
+    <string name="error_edad_mascota">Ingrese la edad de la mascota</string>
+    <string name="error_edad_invalida">Ingrese una edad válida</string>
+    <string name="toast_mascota_registrada">Mascota registrada correctamente</string>
+    <string name="formato_especie">Especie: %1$s</string>
+    <string name="formato_edad">Edad: %1$s años</string>
+    <string name="formato_raza">Raza: %1$s</string>
+
+    <string-array name="especies_mascota">
+        <item>Perro</item>
+        <item>Gato</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string name="vacunas_titulo">Vacunas</string>
+    <string name="vacunas_subtitulo">Consulta el estado de las vacunas de tus mascotas</string>
+    <string name="luna_vacuna">Vacuna: Antirrábica</string>
+    <string name="luna_fecha_vacuna">Fecha: 15/09/2026</string>
+    <string name="luna_estado_vacuna">Estado: Aplicada</string>
+    <string name="milo_vacuna">Vacuna: Triple felina</string>
+    <string name="milo_fecha_vacuna">Fecha: 28/09/2026</string>
+    <string name="milo_estado_vacuna">Estado: Pendiente</string>
+    <string name="registrar_vacuna">+ Registrar vacuna</string>
+
+    <string name="registrar_vacuna_titulo">Registrar vacuna</string>
+    <string name="registrar_vacuna_subtitulo">Agrega un registro básico de vacunación</string>
+    <string name="nombre_vacuna">Nombre de la vacuna</string>
+    <string name="nombre_vacuna_hint">Ejemplo: Antirrábica</string>
+    <string name="fecha_vacuna">Fecha</string>
+    <string name="fecha_vacuna_hint">DD/MM/AAAA</string>
+    <string name="estado_vacuna">Estado</string>
+    <string name="guardar_vacuna">Guardar vacuna</string>
+    <string name="error_mascota_vacuna">Ingrese el nombre de la mascota</string>
+    <string name="error_nombre_vacuna">Ingrese el nombre de la vacuna</string>
+    <string name="error_fecha_vacuna">Ingrese la fecha</string>
+    <string name="toast_vacuna_registrada">Vacuna registrada correctamente</string>
+    <string name="formato_vacuna">Vacuna: %1$s</string>
+    <string name="formato_fecha_vacuna">Fecha: %1$s</string>
+    <string name="formato_estado_vacuna">Estado: %1$s</string>
+
+    <string-array name="estados_vacuna">
+        <item>Pendiente</item>
+        <item>Aplicada</item>
+    </string-array>
+
+    <!-- Avance 05: módulo básico de próximos controles -->
+    <string name="controles_titulo">Próximos controles</string>
+    <string name="controles_subtitulo">Revisa y registra los controles próximos de tus mascotas</string>
+    <string name="luna_tipo_control">Control: Revisión general</string>
+    <string name="luna_fecha_control">Fecha: 05/10/2026</string>
+    <string name="milo_tipo_control">Control: Control preventivo</string>
+    <string name="milo_fecha_control">Fecha: 12/10/2026</string>
+    <string name="registrar_control">+ Registrar control</string>
+    <string name="registrar_control_titulo">Registrar control</string>
+    <string name="registrar_control_subtitulo">Agrega un próximo control de forma sencilla</string>
+    <string name="tipo_control">Tipo de control</string>
+    <string name="tipo_control_hint">Ejemplo: Revisión general</string>
+    <string name="fecha_control">Fecha del control</string>
+    <string name="fecha_control_hint">DD/MM/AAAA</string>
+    <string name="observacion_control">Observación</string>
+    <string name="observacion_control_hint">Opcional</string>
+    <string name="guardar_control">Guardar control</string>
+    <string name="error_mascota_control">Ingrese el nombre de la mascota</string>
+    <string name="error_tipo_control">Ingrese el tipo de control</string>
+    <string name="error_fecha_control">Ingrese la fecha del control</string>
+    <string name="error_fecha_invalida">Use una fecha válida con formato DD/MM/AAAA</string>
+    <string name="toast_control_registrado">Control registrado correctamente</string>
+    <string name="formato_tipo_control">Control: %1$s</string>
+    <string name="formato_fecha_control">Fecha: %1$s</string>
+    <string name="formato_observacion_control">Observación: %1$s</string>
+
+    <!-- Avance 06: módulo básico de desparasitación -->
+    <string name="desparasitacion_titulo">Desparasitación</string>
+    <string name="desparasitacion_subtitulo">Consulta y registra la desparasitación de tus mascotas</string>
+    <string name="luna_producto_desparasitacion">Producto: Antiparasitario oral</string>
+    <string name="luna_fecha_desparasitacion">Aplicación: 20/09/2026</string>
+    <string name="luna_proxima_desparasitacion">Próxima: 20/12/2026</string>
+    <string name="milo_producto_desparasitacion">Producto: Pipeta antiparasitaria</string>
+    <string name="milo_fecha_desparasitacion">Aplicación: 10/09/2026</string>
+    <string name="milo_proxima_desparasitacion">Próxima: 10/12/2026</string>
+    <string name="registrar_desparasitacion">+ Registrar desparasitación</string>
+    <string name="registrar_desparasitacion_titulo">Registrar desparasitación</string>
+    <string name="registrar_desparasitacion_subtitulo">Agrega un registro básico de desparasitación</string>
+    <string name="producto_desparasitacion">Producto o medicamento</string>
+    <string name="producto_desparasitacion_hint">Ejemplo: Antiparasitario oral</string>
+    <string name="fecha_desparasitacion">Fecha de aplicación</string>
+    <string name="fecha_desparasitacion_hint">DD/MM/AAAA</string>
+    <string name="proxima_desparasitacion">Próxima desparasitación</string>
+    <string name="proxima_desparasitacion_hint">DD/MM/AAAA</string>
+    <string name="observacion_desparasitacion">Observación</string>
+    <string name="observacion_desparasitacion_hint">Opcional</string>
+    <string name="guardar_desparasitacion">Guardar desparasitación</string>
+    <string name="error_mascota_desparasitacion">Ingrese el nombre de la mascota</string>
+    <string name="error_producto_desparasitacion">Ingrese el producto o medicamento</string>
+    <string name="error_fecha_desparasitacion">Ingrese la fecha de aplicación</string>
+    <string name="error_proxima_desparasitacion">Ingrese la próxima fecha</string>
+    <string name="toast_desparasitacion_registrada">Desparasitación registrada correctamente</string>
+    <string name="formato_producto_desparasitacion">Producto: %1$s</string>
+    <string name="formato_fecha_desparasitacion">Aplicación: %1$s</string>
+    <string name="formato_proxima_desparasitacion">Próxima: %1$s</string>
+    <string name="formato_observacion_desparasitacion">Observación: %1$s</string>
+
+
+    <!-- Avance 07: selección de mascota, detalle, historial y controles -->
+    <string name="mis_mascotas_subtitulo_avance07">Selecciona una mascota para revisar sus datos, historial y controles</string>
+    <string name="ver_detalles">Ver detalles</string>
+    <string name="luna_especie_valor">Perro</string>
+    <string name="luna_edad_valor">3</string>
+    <string name="milo_especie_valor">Gato</string>
+    <string name="milo_edad_valor">2</string>
+    <string name="detalle_mascota_titulo">Detalle de mascota</string>
+    <string name="detalle_mascota_subtitulo">Información básica de salud de la mascota seleccionada</string>
+    <string name="volver_mis_mascotas">← Mis mascotas</string>
+    <string name="informacion_mascota">Información</string>
+    <string name="historial_mascota">Historial</string>
+    <string name="controles_mascota">Controles</string>
+    <string name="detalle_formato_especie">Especie: %1$s</string>
+    <string name="detalle_formato_edad">Edad: %1$s años</string>
+    <string name="detalle_formato_raza">Raza: %1$s</string>
+    <string name="sin_historial">No hay registros en el historial.</string>
+    <string name="sin_controles">No hay controles registrados.</string>
+    <string name="control_estado_pendiente">Estado: Pendiente</string>
+    <string name="luna_historial_vacuna">Vacuna antirrábica · 15/09/2026</string>
+    <string name="luna_historial_desparasitacion">Desparasitación · 20/09/2026</string>
+    <string name="milo_historial_desparasitacion">Desparasitación · 10/09/2026</string>
+
+    <!-- Avance 08: próximos controles vinculados a cada mascota -->
+    <string name="controles_subtitulo_avance08">Revisa los próximos controles y entra al detalle de cada mascota</string>
+    <string name="ver_mascota_control">Ver mascota</string>
+    <string name="volver_inicio">← Volver</string>
+    <string name="sin_proximos_controles">No hay próximos controles registrados.</string>
+    <string name="controles_sin_bd_avance08">Los controles se mantienen de forma local. Su almacenamiento en SQLite se incorporará en un avance posterior.</string>
+    <string name="luna_fecha_control_valor">05/10/2026</string>
+    <string name="milo_fecha_control_valor">12/10/2026</string>
+
+    <!-- Avance 09: vacunas vinculadas a cada mascota -->
+    <string name="vacunas_subtitulo_avance09">Revisa las vacunas y entra al detalle de cada mascota</string>
+    <string name="ver_mascota_vacuna">Ver mascota</string>
+    <string name="sin_vacunas">No hay vacunas registradas.</string>
+    <string name="vacunas_mascota">Vacunas</string>
+    <string name="detalle_mascota_subtitulo_avance09">Información, historial, controles y vacunas de la mascota seleccionada</string>
+    <string name="vacunas_sin_bd_avance09">Las vacunas se mantienen de forma local. Su almacenamiento en SQLite se incorporará en un avance posterior.</string>
+    <string name="luna_vacuna_valor">Antirrábica</string>
+    <string name="luna_fecha_vacuna_valor">15/09/2026</string>
+    <string name="luna_estado_vacuna_valor">Aplicada</string>
+    <string name="milo_vacuna_valor">Triple felina</string>
+    <string name="milo_fecha_vacuna_valor">28/09/2026</string>
+    <string name="milo_estado_vacuna_valor">Pendiente</string>
+
+    <!-- Avance 10: SQLite para mascotas -->
+    <string name="mis_mascotas_subtitulo_avance10">Mascotas guardadas localmente en SQLite</string>
+    <string name="sin_mascotas_registradas">No tienes mascotas registradas.</string>
+    <string name="toast_error_registrar_mascota">No se pudo registrar la mascota</string>
+    <string name="toast_mascota_no_encontrada">No se encontró la mascota seleccionada</string>
+    <string name="detalle_mascota_subtitulo_avance10">Información principal guardada en SQLite, con su historial, controles y vacunas</string>
+
+    <!-- Avance 11: edición y eliminación de mascotas con SQLite -->
+    <string name="mis_mascotas_subtitulo_avance11">Mascotas guardadas en SQLite con opciones de edición y eliminación</string>
+    <string name="detalle_mascota_subtitulo_avance11">Información principal en SQLite con edición, eliminación, historial, controles y vacunas</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="editar_mascota_titulo">Editar mascota</string>
+    <string name="editar_mascota_subtitulo">Modifica los datos principales guardados en SQLite</string>
+    <string name="volver_detalle_mascota">← Volver</string>
+    <string name="guardar_cambios_mascota">Guardar cambios</string>
+    <string name="eliminar_mascota">Eliminar mascota</string>
+    <string name="confirmar_eliminar_mascota">¿Estás seguro de que deseas eliminar esta mascota?</string>
+    <string name="toast_mascota_actualizada">Mascota actualizada correctamente</string>
+    <string name="toast_error_actualizar_mascota">No se pudo actualizar la mascota</string>
+    <string name="toast_mascota_eliminada">Mascota eliminada correctamente</string>
+    <string name="toast_error_eliminar_mascota">No se pudo eliminar la mascota</string>
+
+    <!-- Avance 12: controles persistentes relacionados con mascotas en SQLite -->
+    <string name="controles_subtitulo_avance12">Controles guardados en SQLite y relacionados con cada mascota</string>
+    <string name="registrar_control_subtitulo_avance12">Selecciona una mascota y guarda su próximo control en SQLite</string>
+    <string name="controles_sqlite_avance12">Los próximos controles ahora se guardan en pethealth.db mediante mascota_id.</string>
+    <string name="seleccionar_mascota_control">Mascota</string>
+    <string name="sin_mascotas_para_control">No hay mascotas registradas para asociar un control.</string>
+    <string name="error_seleccionar_mascota_control">Selecciona una mascota</string>
+    <string name="toast_error_registrar_control">No se pudo registrar el control</string>
+    <string name="formato_estado_control">Estado: %1$s</string>
+    <string name="estado_pendiente_valor">Pendiente</string>
+    <string name="luna_tipo_control_valor">Revisión general</string>
+    <string name="milo_tipo_control_valor">Control preventivo</string>
+    <string name="detalle_mascota_subtitulo_avance12">Información de la mascota con controles consultados desde SQLite</string>
+
+    <!-- Avance 13: vacunas persistentes relacionadas con mascotas en SQLite -->
+    <string name="vacunas_subtitulo_avance13">Vacunas guardadas en SQLite y relacionadas con cada mascota</string>
+    <string name="vacunas_sqlite_avance13">Las vacunas ahora se guardan en pethealth.db mediante mascota_id.</string>
+    <string name="registrar_vacuna_subtitulo_avance13">Selecciona una mascota y guarda su vacuna en SQLite</string>
+    <string name="seleccionar_mascota_vacuna">Mascota</string>
+    <string name="sin_mascotas_para_vacuna">No hay mascotas registradas para asociar una vacuna.</string>
+    <string name="error_seleccionar_mascota_vacuna">Selecciona una mascota</string>
+    <string name="toast_error_registrar_vacuna">No se pudo registrar la vacuna</string>
+    <string name="detalle_mascota_subtitulo_avance13">Información de la mascota con controles y vacunas consultados desde SQLite</string>
+
+
+    <!-- Avance 14: CRUD de controles y vacunas -->
+    <string name="controles_subtitulo_avance14">Gestiona tus próximos controles guardados en SQLite</string>
+    <string name="vacunas_subtitulo_avance14">Gestiona las vacunas guardadas en SQLite</string>
+
+    <string name="editar_control_titulo">Editar control</string>
+    <string name="editar_control_subtitulo">Modifica los datos del control seleccionado</string>
+    <string name="estado_control">Estado</string>
+    <string name="estado_control_hint">Ejemplo: Pendiente</string>
+    <string name="error_estado_control">Ingrese el estado del control</string>
+    <string name="guardar_cambios_control">Guardar cambios</string>
+    <string name="eliminar_control">Eliminar control</string>
+    <string name="confirmar_eliminar_control">¿Estás seguro de que deseas eliminar este control?</string>
+    <string name="toast_control_actualizado">Control actualizado correctamente</string>
+    <string name="toast_error_actualizar_control">No se pudo actualizar el control</string>
+    <string name="toast_control_eliminado">Control eliminado correctamente</string>
+    <string name="toast_error_eliminar_control">No se pudo eliminar el control</string>
+    <string name="toast_control_no_encontrado">No se encontró el control seleccionado</string>
+
+    <string name="editar_vacuna_titulo">Editar vacuna</string>
+    <string name="editar_vacuna_subtitulo">Modifica los datos de la vacuna seleccionada</string>
+    <string name="guardar_cambios_vacuna">Guardar cambios</string>
+    <string name="eliminar_vacuna">Eliminar vacuna</string>
+    <string name="confirmar_eliminar_vacuna">¿Estás seguro de que deseas eliminar esta vacuna?</string>
+    <string name="toast_vacuna_actualizada">Vacuna actualizada correctamente</string>
+    <string name="toast_error_actualizar_vacuna">No se pudo actualizar la vacuna</string>
+    <string name="toast_vacuna_eliminada">Vacuna eliminada correctamente</string>
+    <string name="toast_error_eliminar_vacuna">No se pudo eliminar la vacuna</string>
+    <string name="toast_vacuna_no_encontrada">No se encontró la vacuna seleccionada</string>
+
+</resources>
