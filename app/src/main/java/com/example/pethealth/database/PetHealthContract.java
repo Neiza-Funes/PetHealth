@@ -1,5 +1,11 @@
 package com.example.pethealth.database;
 
+import com.example.pethealth.database.PetHealthContract.ControlEntry;
+import com.example.pethealth.database.PetHealthContract.DesparasitacionEntry;
+import com.example.pethealth.database.PetHealthContract.MascotaEntry;
+import com.example.pethealth.database.PetHealthContract.UsuarioEntry;
+import com.example.pethealth.database.PetHealthContract.VacunaEntry;
+
 import android.provider.BaseColumns;
 
 /**

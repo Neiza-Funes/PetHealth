@@ -88,6 +88,24 @@ La fotografía de mascota se obtiene mediante `MediaStore.ACTION_IMAGE_CAPTURE` 
 
 Estas medidas corresponden a buenas prácticas básicas de seguridad dentro del alcance académico del proyecto y no representan un esquema de seguridad avanzado de producción.
 
+
+## Organización del código
+
+En el Avance 26 se reorganizaron las clases Java en paquetes sencillos según su responsabilidad, manteniendo el package base `com.example.pethealth` y sin incorporar arquitecturas adicionales.
+
+```text
+database/          Persistencia SQLite y Contract Class
+model/             Modelos de datos
+adapter/           Adapters de RecyclerView
+auth/              Autenticación y sesión
+mascota/           Gestión de mascotas
+control/           Controles médicos
+vacuna/            Vacunas
+desparasitacion/   Desparasitación
+```
+
+`InicioActivity` permanece en el paquete base porque funciona como pantalla central de navegación. Esta organización busca facilitar la lectura y mantenimiento del proyecto sin cambiar su funcionamiento.
+
 ## Diagrama de Navegación
 
 El siguiente diagrama corresponde al material preparado para PetHealth y resume el flujo principal entre gestión de usuarios, mascotas, controles y vacunas.
@@ -102,7 +120,7 @@ El modelo representa la estructura principal documentada anteriormente para PetH
 
 ![Modelo Entidad-Relación de PetHealth](./docs/diagramas/PetHealth_MER_SQLite.png)
 
-En el Avance 25 se incorporó la tabla `desparasitaciones` a SQLite. El PNG del MER se mantiene sin cambios en este avance y se deja su actualización documental para el Avance 26.
+En el Avance 25 se incorporó la tabla `desparasitaciones` a SQLite. El PNG del MER se mantiene sin cambios durante el Avance 26 y su actualización documental se deja para el Avance 27.
 
 ## Instalación y ejecución
 
@@ -118,3 +136,10 @@ Este avance mantiene las medidas de seguridad incorporadas anteriormente y compl
 La base de datos utiliza `VERSION_BD = 6` porque se agregó únicamente la tabla `desparasitaciones`, mediante una migración que conserva usuarios, mascotas, controles y vacunas existentes.
 
 También se amplió de forma controlada el uso de `ExecutorService`: Controles mantiene sus operaciones en segundo plano, Desparasitación carga y elimina registros de forma asíncrona, y las consultas principales de Mis Mascotas y Vacunas también se ejecutan fuera del hilo principal antes de actualizar la interfaz.
+
+
+## Avance 26
+
+Este avance reorganiza las clases Java por responsabilidad, actualiza packages, imports y rutas del Manifest, y realiza una limpieza estructural controlada. También inicia la documentación JavaDoc en las clases principales de persistencia, sesión, seguridad y modelos.
+
+No se modifica el esquema SQLite: `VERSION_BD = 6` y la migración 5 → 6 permanecen iguales. La revisión documental completa, el JavaDoc restante y la actualización final de los diagramas se dejan para el Avance 27.

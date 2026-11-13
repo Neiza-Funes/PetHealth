@@ -1,5 +1,14 @@
 package com.example.pethealth;
 
+import com.example.pethealth.auth.LoginActivity;
+import com.example.pethealth.auth.SessionManager;
+import com.example.pethealth.control.ControlesActivity;
+import com.example.pethealth.database.DatabaseHelper;
+import com.example.pethealth.desparasitacion.DesparasitacionActivity;
+import com.example.pethealth.mascota.MisMascotasActivity;
+import com.example.pethealth.mascota.RegistrarMascotaActivity;
+import com.example.pethealth.vacuna.VacunasActivity;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
