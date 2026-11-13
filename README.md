@@ -53,6 +53,19 @@ Las mascotas se relacionan con el usuario autenticado mediante `usuario_id`, mie
 
 El modelo incluido en este avance se utiliza como representación conceptual de estas relaciones y respeta los campos principales existentes en el proyecto.
 
+
+## Contract Class
+
+En este avance se incorporó `PetHealthContract` para centralizar los nombres de las tablas y columnas que utiliza SQLite. De esta forma `DatabaseHelper` puede trabajar con constantes comunes y se evita repetir manualmente cadenas como `usuarios`, `mascotas`, `controles`, `vacunas`, `usuario_id` o `mascota_id` en distintas partes de la clase.
+
+La estructura utilizada puede resumirse como:
+
+```text
+PetHealthContract → DatabaseHelper → SQLite
+```
+
+El Contract representa el esquema que PetHealth ya utilizaba. No se cambiaron nombres de tablas o columnas, no se agregaron restricciones `FOREIGN KEY` y la versión de la base de datos continúa en `5`.
+
 ## Diagrama de Navegación
 
 El siguiente diagrama corresponde al material preparado para PetHealth y resume el flujo principal entre gestión de usuarios, mascotas, controles y vacunas.
@@ -76,6 +89,6 @@ La tabla de desparasitación no se incorpora en este modelo porque el Avance 21 
 3. Esperar que Gradle termine de sincronizar.
 4. Ejecutar la aplicación en un emulador o dispositivo Android compatible.
 
-## Avance 22
+## Avance 23
 
-En este avance se integró la documentación técnica inicial del proyecto mediante el README, el Diagrama de Navegación y el Modelo Entidad-Relación. No se realizaron cambios funcionales en SQLite, seguridad, cámara, sesión, CRUD ni navegación.
+Este avance continúa la documentación incorporada en el Avance 22 y agrega `PetHealthContract` para ordenar las constantes de SQLite. `DatabaseHelper` fue adaptado para usar el Contract sin cambiar el esquema de la base de datos ni la funcionalidad de Login, sesión, mascotas, controles, vacunas, cámara o navegación.
