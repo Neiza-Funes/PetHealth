@@ -8,57 +8,57 @@
         android:required="false" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.PetHealth">
 
         <activity
-            android:name=".EditarControlActivity"
+            android:name=".control.EditarControlActivity"
             android:exported="false" />
 
         <activity
-            android:name=".EditarVacunaActivity"
+            android:name=".vacuna.EditarVacunaActivity"
             android:exported="false" />
 
         <activity
-            android:name=".EditarMascotaActivity"
+            android:name=".mascota.EditarMascotaActivity"
             android:exported="false" />
 
         <activity
-            android:name=".DetalleMascotaActivity"
+            android:name=".mascota.DetalleMascotaActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegistrarControlActivity"
+            android:name=".control.RegistrarControlActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ControlesActivity"
+            android:name=".control.ControlesActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegistrarMascotaActivity"
+            android:name=".mascota.RegistrarMascotaActivity"
             android:exported="false" />
 
         <activity
-            android:name=".MisMascotasActivity"
+            android:name=".mascota.MisMascotasActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegistrarVacunaActivity"
+            android:name=".vacuna.RegistrarVacunaActivity"
             android:exported="false" />
 
         <activity
-            android:name=".VacunasActivity"
+            android:name=".vacuna.VacunasActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegistrarDesparasitacionActivity"
+            android:name=".desparasitacion.RegistrarDesparasitacionActivity"
             android:exported="false" />
 
         <activity
-            android:name=".DesparasitacionActivity"
+            android:name=".desparasitacion.DesparasitacionActivity"
             android:exported="false" />
 
         <activity
@@ -66,15 +66,15 @@
             android:exported="false" />
 
         <activity
-            android:name=".RegistroActivity"
+            android:name=".auth.RegistroActivity"
             android:exported="false" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".auth.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

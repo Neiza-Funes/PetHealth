@@ -6,6 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.pethealth.database.PetHealthContract.ControlEntry;
+import com.example.pethealth.database.PetHealthContract.DesparasitacionEntry;
+import com.example.pethealth.database.PetHealthContract.MascotaEntry;
+import com.example.pethealth.database.PetHealthContract.UsuarioEntry;
+import com.example.pethealth.database.PetHealthContract.VacunaEntry;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,37 +20,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String NOMBRE_BD = "pethealth.db";
-    public static final int VERSION_BD = 5;
-
-    public static final String TABLA_USUARIOS = "usuarios";
-    public static final String COL_USUARIO_ID = "id";
-    public static final String COL_USUARIO_NOMBRE = "nombre";
-    public static final String COL_USUARIO_CORREO = "correo";
-    public static final String COL_USUARIO_PASSWORD_HASH = "password_hash";
-
-    public static final String TABLA_MASCOTAS = "mascotas";
-    public static final String COL_ID = "id";
-    public static final String COL_MASCOTA_USUARIO_ID = "usuario_id";
-    public static final String COL_NOMBRE = "nombre";
-    public static final String COL_ESPECIE = "especie";
-    public static final String COL_EDAD = "edad";
-    public static final String COL_RAZA = "raza";
-    public static final String COL_FOTO_PATH = "foto_path";
-
-    public static final String TABLA_CONTROLES = "controles";
-    public static final String COL_CONTROL_ID = "id";
-    public static final String COL_CONTROL_MASCOTA_ID = "mascota_id";
-    public static final String COL_CONTROL_TIPO = "tipo";
-    public static final String COL_CONTROL_FECHA = "fecha";
-    public static final String COL_CONTROL_ESTADO = "estado";
-    public static final String COL_CONTROL_OBSERVACION = "observacion";
-
-    public static final String TABLA_VACUNAS = "vacunas";
-    public static final String COL_VACUNA_ID = "id";
-    public static final String COL_VACUNA_MASCOTA_ID = "mascota_id";
-    public static final String COL_VACUNA_NOMBRE = "nombre";
-    public static final String COL_VACUNA_FECHA = "fecha";
-    public static final String COL_VACUNA_ESTADO = "estado";
+    public static final int VERSION_BD = 6;
 
     public static final String NOMBRE_USUARIO_NEI = "Nei";
     public static final String CORREO_USUARIO_NEI = "nfunes@gmail.com";
@@ -77,6 +53,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         crearTablaVacunas(db);
         insertarVacunaInicial(db, lunaId, "Antirrábica", "15/09/2026", ESTADO_APLICADA);
         insertarVacunaInicial(db, miloId, "Triple felina", "28/09/2026", ESTADO_PENDIENTE);
+
+        crearTablaDesparasitaciones(db);
     }
 
     @Override
@@ -104,27 +82,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 5) {
             asegurarEstructuraUsuariosYPropiedad(db);
         }
+
+        if (oldVersion < 6) {
+            crearTablaDesparasitaciones(db);
+        }
     }
 
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
 
-        // Conserva la corrección del Avance 20 para instalaciones antiguas que
-        // podían estar marcadas como versión 4 sin tener realmente foto_path.
         asegurarColumnaFotoMascota(db);
 
-        // Protección equivalente para el Avance 21: si una instalación quedó
-        // con un esquema incompleto, solo crea/agrega lo faltante y conserva datos.
+        // Protección equivalente para el Avance 21:
         asegurarEstructuraUsuariosYPropiedad(db);
     }
 
     private void crearTablaUsuarios(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLA_USUARIOS + " (" +
-                COL_USUARIO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_USUARIO_NOMBRE + " TEXT NOT NULL, " +
-                COL_USUARIO_CORREO + " TEXT NOT NULL UNIQUE, " +
-                COL_USUARIO_PASSWORD_HASH + " TEXT NOT NULL" +
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + UsuarioEntry.TABLE_NAME + " (" +
+                UsuarioEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                UsuarioEntry.COLUMN_NOMBRE + " TEXT NOT NULL, " +
+                UsuarioEntry.COLUMN_CORREO + " TEXT NOT NULL UNIQUE, " +
+                UsuarioEntry.COLUMN_PASSWORD_HASH + " TEXT NOT NULL" +
                 ")");
     }
 
@@ -132,18 +111,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         crearTablaUsuarios(db);
         long neiId = asegurarUsuarioPredeterminado(db);
 
-        if (!existeColumna(db, TABLA_MASCOTAS, COL_MASCOTA_USUARIO_ID)) {
-            db.execSQL("ALTER TABLE " + TABLA_MASCOTAS +
-                    " ADD COLUMN " + COL_MASCOTA_USUARIO_ID + " INTEGER");
+        if (!existeColumna(db, MascotaEntry.TABLE_NAME, MascotaEntry.COLUMN_USUARIO_ID)) {
+            db.execSQL("ALTER TABLE " + MascotaEntry.TABLE_NAME +
+                    " ADD COLUMN " + MascotaEntry.COLUMN_USUARIO_ID + " INTEGER");
         }
 
         if (neiId > 0) {
             ContentValues values = new ContentValues();
-            values.put(COL_MASCOTA_USUARIO_ID, neiId);
+            values.put(MascotaEntry.COLUMN_USUARIO_ID, neiId);
             db.update(
-                    TABLA_MASCOTAS,
+                    MascotaEntry.TABLE_NAME,
                     values,
-                    COL_MASCOTA_USUARIO_ID + " IS NULL OR " + COL_MASCOTA_USUARIO_ID + " <= 0",
+                    MascotaEntry.COLUMN_USUARIO_ID + " IS NULL OR " + MascotaEntry.COLUMN_USUARIO_ID + " <= 0",
                     null
             );
         }
@@ -152,9 +131,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private long asegurarUsuarioPredeterminado(SQLiteDatabase db) {
         String correo = normalizarCorreo(CORREO_USUARIO_NEI);
         Cursor cursor = db.query(
-                TABLA_USUARIOS,
-                new String[]{COL_USUARIO_ID},
-                COL_USUARIO_CORREO + " = ?",
+                UsuarioEntry.TABLE_NAME,
+                new String[]{UsuarioEntry.COLUMN_ID},
+                UsuarioEntry.COLUMN_CORREO + " = ?",
                 new String[]{correo},
                 null,
                 null,
@@ -164,27 +143,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             if (cursor.moveToFirst()) {
-                return cursor.getLong(cursor.getColumnIndexOrThrow(COL_USUARIO_ID));
+                return cursor.getLong(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_ID));
             }
         } finally {
             cursor.close();
         }
 
         ContentValues values = new ContentValues();
-        values.put(COL_USUARIO_NOMBRE, NOMBRE_USUARIO_NEI);
-        values.put(COL_USUARIO_CORREO, correo);
-        values.put(COL_USUARIO_PASSWORD_HASH, HASH_PASSWORD_USUARIO_NEI);
-        return db.insert(TABLA_USUARIOS, null, values);
+        values.put(UsuarioEntry.COLUMN_NOMBRE, NOMBRE_USUARIO_NEI);
+        values.put(UsuarioEntry.COLUMN_CORREO, correo);
+        values.put(UsuarioEntry.COLUMN_PASSWORD_HASH, HASH_PASSWORD_USUARIO_NEI);
+        return db.insert(UsuarioEntry.TABLE_NAME, null, values);
     }
 
     private void asegurarColumnaFotoMascota(SQLiteDatabase db) {
-        if (!existeTabla(db, TABLA_MASCOTAS)) {
+        if (!existeTabla(db, MascotaEntry.TABLE_NAME)) {
             return;
         }
 
-        if (!existeColumna(db, TABLA_MASCOTAS, COL_FOTO_PATH)) {
-            db.execSQL("ALTER TABLE " + TABLA_MASCOTAS +
-                    " ADD COLUMN " + COL_FOTO_PATH + " TEXT");
+        if (!existeColumna(db, MascotaEntry.TABLE_NAME, MascotaEntry.COLUMN_FOTO_PATH)) {
+            db.execSQL("ALTER TABLE " + MascotaEntry.TABLE_NAME +
+                    " ADD COLUMN " + MascotaEntry.COLUMN_FOTO_PATH + " TEXT");
         }
     }
 
@@ -218,39 +197,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void crearTablaMascotas(SQLiteDatabase db) {
-        String crearTabla = "CREATE TABLE " + TABLA_MASCOTAS + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_MASCOTA_USUARIO_ID + " INTEGER NOT NULL, " +
-                COL_NOMBRE + " TEXT NOT NULL, " +
-                COL_ESPECIE + " TEXT NOT NULL, " +
-                COL_EDAD + " INTEGER NOT NULL, " +
-                COL_RAZA + " TEXT, " +
-                COL_FOTO_PATH + " TEXT" +
+        String crearTabla = "CREATE TABLE " + MascotaEntry.TABLE_NAME + " (" +
+                MascotaEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MascotaEntry.COLUMN_USUARIO_ID + " INTEGER NOT NULL, " +
+                MascotaEntry.COLUMN_NOMBRE + " TEXT NOT NULL, " +
+                MascotaEntry.COLUMN_ESPECIE + " TEXT NOT NULL, " +
+                MascotaEntry.COLUMN_EDAD + " INTEGER NOT NULL, " +
+                MascotaEntry.COLUMN_RAZA + " TEXT, " +
+                MascotaEntry.COLUMN_FOTO_PATH + " TEXT" +
                 ")";
 
         db.execSQL(crearTabla);
     }
 
     private void crearTablaControles(SQLiteDatabase db) {
-        String crearTabla = "CREATE TABLE IF NOT EXISTS " + TABLA_CONTROLES + " (" +
-                COL_CONTROL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_CONTROL_MASCOTA_ID + " INTEGER NOT NULL, " +
-                COL_CONTROL_TIPO + " TEXT NOT NULL, " +
-                COL_CONTROL_FECHA + " TEXT NOT NULL, " +
-                COL_CONTROL_ESTADO + " TEXT NOT NULL, " +
-                COL_CONTROL_OBSERVACION + " TEXT" +
+        String crearTabla = "CREATE TABLE IF NOT EXISTS " + ControlEntry.TABLE_NAME + " (" +
+                ControlEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ControlEntry.COLUMN_MASCOTA_ID + " INTEGER NOT NULL, " +
+                ControlEntry.COLUMN_TIPO + " TEXT NOT NULL, " +
+                ControlEntry.COLUMN_FECHA + " TEXT NOT NULL, " +
+                ControlEntry.COLUMN_ESTADO + " TEXT NOT NULL, " +
+                ControlEntry.COLUMN_OBSERVACION + " TEXT" +
                 ")";
 
         db.execSQL(crearTabla);
     }
 
     private void crearTablaVacunas(SQLiteDatabase db) {
-        String crearTabla = "CREATE TABLE IF NOT EXISTS " + TABLA_VACUNAS + " (" +
-                COL_VACUNA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_VACUNA_MASCOTA_ID + " INTEGER NOT NULL, " +
-                COL_VACUNA_NOMBRE + " TEXT NOT NULL, " +
-                COL_VACUNA_FECHA + " TEXT NOT NULL, " +
-                COL_VACUNA_ESTADO + " TEXT NOT NULL" +
+        String crearTabla = "CREATE TABLE IF NOT EXISTS " + VacunaEntry.TABLE_NAME + " (" +
+                VacunaEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                VacunaEntry.COLUMN_MASCOTA_ID + " INTEGER NOT NULL, " +
+                VacunaEntry.COLUMN_NOMBRE + " TEXT NOT NULL, " +
+                VacunaEntry.COLUMN_FECHA + " TEXT NOT NULL, " +
+                VacunaEntry.COLUMN_ESTADO + " TEXT NOT NULL" +
+                ")";
+
+        db.execSQL(crearTabla);
+    }
+
+    private void crearTablaDesparasitaciones(SQLiteDatabase db) {
+        String crearTabla = "CREATE TABLE IF NOT EXISTS " + DesparasitacionEntry.TABLE_NAME + " (" +
+                DesparasitacionEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DesparasitacionEntry.COLUMN_MASCOTA_ID + " INTEGER NOT NULL, " +
+                DesparasitacionEntry.COLUMN_PRODUCTO + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_FECHA + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_PROXIMA_FECHA + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_OBSERVACION + " TEXT" +
                 ")";
 
         db.execSQL(crearTabla);
@@ -269,7 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         ContentValues values = crearValoresMascota(usuarioId, nombre, especie, edad, raza);
-        return db.insert(TABLA_MASCOTAS, null, values);
+        return db.insert(MascotaEntry.TABLE_NAME, null, values);
     }
 
     private void insertarControlInicial(
@@ -285,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         db.insert(
-                TABLA_CONTROLES,
+                ControlEntry.TABLE_NAME,
                 null,
                 crearValoresControl(mascotaId, tipo, fecha, estado, observacion)
         );
@@ -318,7 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         db.insert(
-                TABLA_VACUNAS,
+                VacunaEntry.TABLE_NAME,
                 null,
                 crearValoresVacuna(mascotaId, nombre, fecha, estado)
         );
@@ -340,9 +332,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private boolean existeMascotaSinFiltro(SQLiteDatabase db, long mascotaId) {
         Cursor cursor = db.query(
-                TABLA_MASCOTAS,
-                new String[]{COL_ID},
-                COL_ID + " = ?",
+                MascotaEntry.TABLE_NAME,
+                new String[]{MascotaEntry.COLUMN_ID},
+                MascotaEntry.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(mascotaId)},
                 null,
                 null,
@@ -359,11 +351,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private boolean existeControlInicial(SQLiteDatabase db, long mascotaId, String tipo, String fecha) {
         Cursor cursor = db.query(
-                TABLA_CONTROLES,
-                new String[]{COL_CONTROL_ID},
-                COL_CONTROL_MASCOTA_ID + " = ? AND " +
-                        COL_CONTROL_TIPO + " = ? AND " +
-                        COL_CONTROL_FECHA + " = ?",
+                ControlEntry.TABLE_NAME,
+                new String[]{ControlEntry.COLUMN_ID},
+                ControlEntry.COLUMN_MASCOTA_ID + " = ? AND " +
+                        ControlEntry.COLUMN_TIPO + " = ? AND " +
+                        ControlEntry.COLUMN_FECHA + " = ?",
                 new String[]{String.valueOf(mascotaId), tipo, fecha},
                 null,
                 null,
@@ -380,11 +372,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private boolean existeVacunaInicial(SQLiteDatabase db, long mascotaId, String nombre, String fecha) {
         Cursor cursor = db.query(
-                TABLA_VACUNAS,
-                new String[]{COL_VACUNA_ID},
-                COL_VACUNA_MASCOTA_ID + " = ? AND " +
-                        COL_VACUNA_NOMBRE + " = ? AND " +
-                        COL_VACUNA_FECHA + " = ?",
+                VacunaEntry.TABLE_NAME,
+                new String[]{VacunaEntry.COLUMN_ID},
+                VacunaEntry.COLUMN_MASCOTA_ID + " = ? AND " +
+                        VacunaEntry.COLUMN_NOMBRE + " = ? AND " +
+                        VacunaEntry.COLUMN_FECHA + " = ?",
                 new String[]{String.valueOf(mascotaId), nombre, fecha},
                 null,
                 null,
@@ -402,18 +394,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public long insertarUsuario(String nombre, String correo, String passwordHash) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_USUARIO_NOMBRE, nombre == null ? "" : nombre.trim());
-        values.put(COL_USUARIO_CORREO, normalizarCorreo(correo));
-        values.put(COL_USUARIO_PASSWORD_HASH, passwordHash == null ? "" : passwordHash);
-        return db.insert(TABLA_USUARIOS, null, values);
+        values.put(UsuarioEntry.COLUMN_NOMBRE, nombre == null ? "" : nombre.trim());
+        values.put(UsuarioEntry.COLUMN_CORREO, normalizarCorreo(correo));
+        values.put(UsuarioEntry.COLUMN_PASSWORD_HASH, passwordHash == null ? "" : passwordHash);
+        return db.insert(UsuarioEntry.TABLE_NAME, null, values);
     }
 
     public boolean existeUsuarioPorCorreo(String correo) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_USUARIOS,
-                new String[]{COL_USUARIO_ID},
-                COL_USUARIO_CORREO + " = ?",
+                UsuarioEntry.TABLE_NAME,
+                new String[]{UsuarioEntry.COLUMN_ID},
+                UsuarioEntry.COLUMN_CORREO + " = ?",
                 new String[]{normalizarCorreo(correo)},
                 null,
                 null,
@@ -431,9 +423,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Usuario validarUsuario(String correo, String passwordHash) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_USUARIOS,
+                UsuarioEntry.TABLE_NAME,
                 null,
-                COL_USUARIO_CORREO + " = ? AND " + COL_USUARIO_PASSWORD_HASH + " = ?",
+                UsuarioEntry.COLUMN_CORREO + " = ? AND " + UsuarioEntry.COLUMN_PASSWORD_HASH + " = ?",
                 new String[]{normalizarCorreo(correo), passwordHash == null ? "" : passwordHash},
                 null,
                 null,
@@ -455,9 +447,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Usuario obtenerUsuarioPorId(long id) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_USUARIOS,
+                UsuarioEntry.TABLE_NAME,
                 null,
-                COL_USUARIO_ID + " = ?",
+                UsuarioEntry.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(id)},
                 null,
                 null,
@@ -479,9 +471,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Usuario obtenerUsuarioPorCorreo(String correo) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_USUARIOS,
+                UsuarioEntry.TABLE_NAME,
                 null,
-                COL_USUARIO_CORREO + " = ?",
+                UsuarioEntry.COLUMN_CORREO + " = ?",
                 new String[]{normalizarCorreo(correo)},
                 null,
                 null,
@@ -518,7 +510,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 mascota.getRaza()
         );
 
-        long id = db.insert(TABLA_MASCOTAS, null, values);
+        long id = db.insert(MascotaEntry.TABLE_NAME, null, values);
         if (id != -1) {
             mascota.setId(id);
             mascota.setUsuarioId(usuarioId);
@@ -538,13 +530,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_MASCOTAS,
+                MascotaEntry.TABLE_NAME,
                 null,
-                COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(usuarioId)},
                 null,
                 null,
-                COL_ID + " ASC"
+                MascotaEntry.COLUMN_ID + " ASC"
         );
 
         try {
@@ -566,9 +558,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(
-                TABLA_MASCOTAS,
+                MascotaEntry.TABLE_NAME,
                 null,
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)},
                 null,
                 null,
@@ -597,9 +589,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = crearValoresMascotaSinUsuario(nombre, especie, edad, raza);
 
         int filasActualizadas = db.update(
-                TABLA_MASCOTAS,
+                MascotaEntry.TABLE_NAME,
                 values,
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
 
@@ -614,12 +606,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_FOTO_PATH, fotoPath == null ? "" : fotoPath);
+        values.put(MascotaEntry.COLUMN_FOTO_PATH, fotoPath == null ? "" : fotoPath);
 
         int filasActualizadas = db.update(
-                TABLA_MASCOTAS,
+                MascotaEntry.TABLE_NAME,
                 values,
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(mascotaId), String.valueOf(usuarioId)}
         );
 
@@ -634,12 +626,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.putNull(COL_FOTO_PATH);
+        values.putNull(MascotaEntry.COLUMN_FOTO_PATH);
 
         int filasActualizadas = db.update(
-                TABLA_MASCOTAS,
+                MascotaEntry.TABLE_NAME,
                 values,
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(mascotaId), String.valueOf(usuarioId)}
         );
 
@@ -662,20 +654,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             db.delete(
-                    TABLA_CONTROLES,
-                    COL_CONTROL_MASCOTA_ID + " = ?",
+                    ControlEntry.TABLE_NAME,
+                    ControlEntry.COLUMN_MASCOTA_ID + " = ?",
                     new String[]{String.valueOf(id)}
             );
 
             db.delete(
-                    TABLA_VACUNAS,
-                    COL_VACUNA_MASCOTA_ID + " = ?",
+                    VacunaEntry.TABLE_NAME,
+                    VacunaEntry.COLUMN_MASCOTA_ID + " = ?",
+                    new String[]{String.valueOf(id)}
+            );
+
+            db.delete(
+                    DesparasitacionEntry.TABLE_NAME,
+                    DesparasitacionEntry.COLUMN_MASCOTA_ID + " = ?",
                     new String[]{String.valueOf(id)}
             );
 
             int filasEliminadas = db.delete(
-                    TABLA_MASCOTAS,
-                    COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                    MascotaEntry.TABLE_NAME,
+                    MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                     new String[]{String.valueOf(id), String.valueOf(usuarioId)}
             );
 
@@ -697,9 +695,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private String obtenerFotoPath(SQLiteDatabase db, long mascotaId, long usuarioId) {
         Cursor cursor = db.query(
-                TABLA_MASCOTAS,
-                new String[]{COL_FOTO_PATH},
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.TABLE_NAME,
+                new String[]{MascotaEntry.COLUMN_FOTO_PATH},
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(mascotaId), String.valueOf(usuarioId)},
                 null,
                 null,
@@ -709,7 +707,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             if (cursor.moveToFirst()) {
-                String fotoPath = cursor.getString(cursor.getColumnIndexOrThrow(COL_FOTO_PATH));
+                String fotoPath = cursor.getString(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_FOTO_PATH));
                 return fotoPath == null ? "" : fotoPath;
             }
         } finally {
@@ -738,7 +736,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 control.getObservacion()
         );
 
-        long id = db.insert(TABLA_CONTROLES, null, values);
+        long id = db.insert(ControlEntry.TABLE_NAME, null, values);
         if (id != -1) {
             control.setId(id);
         }
@@ -751,14 +749,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Control> obtenerProximosControles() {
         return consultarControles(
-                "c." + COL_CONTROL_ESTADO + " = ?",
+                "c." + ControlEntry.COLUMN_ESTADO + " = ?",
                 new String[]{ESTADO_PENDIENTE}
         );
     }
 
     public List<Control> obtenerControlesPorMascota(long mascotaId) {
         return consultarControles(
-                "c." + COL_CONTROL_MASCOTA_ID + " = ?",
+                "c." + ControlEntry.COLUMN_MASCOTA_ID + " = ?",
                 new String[]{String.valueOf(mascotaId)}
         );
     }
@@ -771,9 +769,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT c.* FROM " + TABLA_CONTROLES + " c " +
-                        "INNER JOIN " + TABLA_MASCOTAS + " m ON m." + COL_ID + " = c." + COL_CONTROL_MASCOTA_ID + " " +
-                        "WHERE c." + COL_CONTROL_ID + " = ? AND m." + COL_MASCOTA_USUARIO_ID + " = ? LIMIT 1",
+                "SELECT c.* FROM " + ControlEntry.TABLE_NAME + " c " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID + " = c." + ControlEntry.COLUMN_MASCOTA_ID + " " +
+                        "WHERE c." + ControlEntry.COLUMN_ID + " = ? AND m." + MascotaEntry.COLUMN_USUARIO_ID + " = ? LIMIT 1",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
 
@@ -804,11 +802,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = crearValoresControl(mascotaId, tipo, fecha, estado, observacion);
         int filasActualizadas = db.update(
-                TABLA_CONTROLES,
+                ControlEntry.TABLE_NAME,
                 values,
-                COL_CONTROL_ID + " = ? AND " + COL_CONTROL_MASCOTA_ID +
-                        " IN (SELECT " + COL_ID + " FROM " + TABLA_MASCOTAS +
-                        " WHERE " + COL_MASCOTA_USUARIO_ID + " = ?)",
+                ControlEntry.COLUMN_ID + " = ? AND " + ControlEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
 
@@ -823,10 +821,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         int filasEliminadas = db.delete(
-                TABLA_CONTROLES,
-                COL_CONTROL_ID + " = ? AND " + COL_CONTROL_MASCOTA_ID +
-                        " IN (SELECT " + COL_ID + " FROM " + TABLA_MASCOTAS +
-                        " WHERE " + COL_MASCOTA_USUARIO_ID + " = ?)",
+                ControlEntry.TABLE_NAME,
+                ControlEntry.COLUMN_ID + " = ? AND " + ControlEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
         return filasEliminadas > 0;
@@ -847,16 +845,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        String where = "m." + COL_MASCOTA_USUARIO_ID + " = ?";
+        String where = "m." + MascotaEntry.COLUMN_USUARIO_ID + " = ?";
         if (condicionExtra != null && !condicionExtra.trim().isEmpty()) {
             where += " AND " + condicionExtra;
         }
 
         SQLiteDatabase db = getReadableDatabase();
-        String ordenFecha = crearOrdenFecha("c." + COL_CONTROL_FECHA) + ", c." + COL_CONTROL_ID + " ASC";
+        String ordenFecha = crearOrdenFecha("c." + ControlEntry.COLUMN_FECHA) + ", c." + ControlEntry.COLUMN_ID + " ASC";
         Cursor cursor = db.rawQuery(
-                "SELECT c.* FROM " + TABLA_CONTROLES + " c " +
-                        "INNER JOIN " + TABLA_MASCOTAS + " m ON m." + COL_ID + " = c." + COL_CONTROL_MASCOTA_ID + " " +
+                "SELECT c.* FROM " + ControlEntry.TABLE_NAME + " c " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID + " = c." + ControlEntry.COLUMN_MASCOTA_ID + " " +
                         "WHERE " + where + " ORDER BY " + ordenFecha,
                 argumentos.toArray(new String[0])
         );
@@ -890,7 +888,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 vacuna.getEstado()
         );
 
-        long id = db.insert(TABLA_VACUNAS, null, values);
+        long id = db.insert(VacunaEntry.TABLE_NAME, null, values);
         if (id != -1) {
             vacuna.setId(id);
         }
@@ -903,7 +901,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Vacuna> obtenerVacunasPorMascota(long mascotaId) {
         return consultarVacunas(
-                "v." + COL_VACUNA_MASCOTA_ID + " = ?",
+                "v." + VacunaEntry.COLUMN_MASCOTA_ID + " = ?",
                 new String[]{String.valueOf(mascotaId)}
         );
     }
@@ -916,9 +914,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(
-                "SELECT v.* FROM " + TABLA_VACUNAS + " v " +
-                        "INNER JOIN " + TABLA_MASCOTAS + " m ON m." + COL_ID + " = v." + COL_VACUNA_MASCOTA_ID + " " +
-                        "WHERE v." + COL_VACUNA_ID + " = ? AND m." + COL_MASCOTA_USUARIO_ID + " = ? LIMIT 1",
+                "SELECT v.* FROM " + VacunaEntry.TABLE_NAME + " v " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID + " = v." + VacunaEntry.COLUMN_MASCOTA_ID + " " +
+                        "WHERE v." + VacunaEntry.COLUMN_ID + " = ? AND m." + MascotaEntry.COLUMN_USUARIO_ID + " = ? LIMIT 1",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
 
@@ -942,11 +940,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = crearValoresVacuna(mascotaId, nombre, fecha, estado);
         int filasActualizadas = db.update(
-                TABLA_VACUNAS,
+                VacunaEntry.TABLE_NAME,
                 values,
-                COL_VACUNA_ID + " = ? AND " + COL_VACUNA_MASCOTA_ID +
-                        " IN (SELECT " + COL_ID + " FROM " + TABLA_MASCOTAS +
-                        " WHERE " + COL_MASCOTA_USUARIO_ID + " = ?)",
+                VacunaEntry.COLUMN_ID + " = ? AND " + VacunaEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
 
@@ -961,10 +959,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         int filasEliminadas = db.delete(
-                TABLA_VACUNAS,
-                COL_VACUNA_ID + " = ? AND " + COL_VACUNA_MASCOTA_ID +
-                        " IN (SELECT " + COL_ID + " FROM " + TABLA_MASCOTAS +
-                        " WHERE " + COL_MASCOTA_USUARIO_ID + " = ?)",
+                VacunaEntry.TABLE_NAME,
+                VacunaEntry.COLUMN_ID + " = ? AND " + VacunaEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
                 new String[]{String.valueOf(id), String.valueOf(usuarioId)}
         );
         return filasEliminadas > 0;
@@ -985,16 +983,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        String where = "m." + COL_MASCOTA_USUARIO_ID + " = ?";
+        String where = "m." + MascotaEntry.COLUMN_USUARIO_ID + " = ?";
         if (condicionExtra != null && !condicionExtra.trim().isEmpty()) {
             where += " AND " + condicionExtra;
         }
 
         SQLiteDatabase db = getReadableDatabase();
-        String ordenFecha = crearOrdenFecha("v." + COL_VACUNA_FECHA) + ", v." + COL_VACUNA_ID + " ASC";
+        String ordenFecha = crearOrdenFecha("v." + VacunaEntry.COLUMN_FECHA) + ", v." + VacunaEntry.COLUMN_ID + " ASC";
         Cursor cursor = db.rawQuery(
-                "SELECT v.* FROM " + TABLA_VACUNAS + " v " +
-                        "INNER JOIN " + TABLA_MASCOTAS + " m ON m." + COL_ID + " = v." + COL_VACUNA_MASCOTA_ID + " " +
+                "SELECT v.* FROM " + VacunaEntry.TABLE_NAME + " v " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID + " = v." + VacunaEntry.COLUMN_MASCOTA_ID + " " +
                         "WHERE " + where + " ORDER BY " + ordenFecha,
                 argumentos.toArray(new String[0])
         );
@@ -1010,15 +1008,112 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return vacunas;
     }
 
+    public long insertarDesparasitacion(Desparasitacion desparasitacion) {
+        if (desparasitacion == null) {
+            return -1;
+        }
+
+        long usuarioId = obtenerUsuarioSesionId();
+        SQLiteDatabase db = getWritableDatabase();
+        if (!mascotaPerteneceAUsuario(db, desparasitacion.getMascotaId(), usuarioId)) {
+            return -1;
+        }
+
+        ContentValues values = crearValoresDesparasitacion(
+                desparasitacion.getMascotaId(),
+                desparasitacion.getProducto(),
+                desparasitacion.getFecha(),
+                desparasitacion.getProximaFecha(),
+                desparasitacion.getObservacion()
+        );
+
+        long id = db.insert(DesparasitacionEntry.TABLE_NAME, null, values);
+        if (id != -1) {
+            desparasitacion.setId(id);
+        }
+        return id;
+    }
+
+    public List<Desparasitacion> obtenerDesparasitaciones() {
+        return consultarDesparasitaciones(null, null);
+    }
+
+    public List<Desparasitacion> obtenerDesparasitacionesPorMascota(long mascotaId) {
+        return consultarDesparasitaciones(
+                "d." + DesparasitacionEntry.COLUMN_MASCOTA_ID + " = ?",
+                new String[]{String.valueOf(mascotaId)}
+        );
+    }
+
+    public boolean eliminarDesparasitacion(long id) {
+        long usuarioId = obtenerUsuarioSesionId();
+        if (usuarioId <= 0) {
+            return false;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        int filasEliminadas = db.delete(
+                DesparasitacionEntry.TABLE_NAME,
+                DesparasitacionEntry.COLUMN_ID + " = ? AND " + DesparasitacionEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
+                new String[]{String.valueOf(id), String.valueOf(usuarioId)}
+        );
+        return filasEliminadas > 0;
+    }
+
+    private List<Desparasitacion> consultarDesparasitaciones(String condicionExtra, String[] argumentosExtra) {
+        List<Desparasitacion> desparasitaciones = new ArrayList<>();
+        long usuarioId = obtenerUsuarioSesionId();
+        if (usuarioId <= 0) {
+            return desparasitaciones;
+        }
+
+        List<String> argumentos = new ArrayList<>();
+        argumentos.add(String.valueOf(usuarioId));
+        if (argumentosExtra != null) {
+            for (String argumento : argumentosExtra) {
+                argumentos.add(argumento);
+            }
+        }
+
+        String where = "m." + MascotaEntry.COLUMN_USUARIO_ID + " = ?";
+        if (condicionExtra != null && !condicionExtra.trim().isEmpty()) {
+            where += " AND " + condicionExtra;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        String ordenFecha = crearOrdenFecha("d." + DesparasitacionEntry.COLUMN_FECHA) +
+                ", d." + DesparasitacionEntry.COLUMN_ID + " ASC";
+        Cursor cursor = db.rawQuery(
+                "SELECT d.*, m." + MascotaEntry.COLUMN_NOMBRE + " AS mascota_nombre FROM " +
+                        DesparasitacionEntry.TABLE_NAME + " d " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID +
+                        " = d." + DesparasitacionEntry.COLUMN_MASCOTA_ID + " " +
+                        "WHERE " + where + " ORDER BY " + ordenFecha,
+                argumentos.toArray(new String[0])
+        );
+
+        try {
+            while (cursor.moveToNext()) {
+                desparasitaciones.add(crearDesparasitacionDesdeCursor(cursor));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return desparasitaciones;
+    }
+
     private boolean mascotaPerteneceAUsuario(SQLiteDatabase db, long mascotaId, long usuarioId) {
         if (mascotaId <= 0 || usuarioId <= 0) {
             return false;
         }
 
         Cursor cursor = db.query(
-                TABLA_MASCOTAS,
-                new String[]{COL_ID},
-                COL_ID + " = ? AND " + COL_MASCOTA_USUARIO_ID + " = ?",
+                MascotaEntry.TABLE_NAME,
+                new String[]{MascotaEntry.COLUMN_ID},
+                MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
                 new String[]{String.valueOf(mascotaId), String.valueOf(usuarioId)},
                 null,
                 null,
@@ -1045,55 +1140,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private ContentValues crearValoresMascota(long usuarioId, String nombre, String especie, int edad, String raza) {
         ContentValues values = crearValoresMascotaSinUsuario(nombre, especie, edad, raza);
-        values.put(COL_MASCOTA_USUARIO_ID, usuarioId);
+        values.put(MascotaEntry.COLUMN_USUARIO_ID, usuarioId);
         return values;
     }
 
     private ContentValues crearValoresMascotaSinUsuario(String nombre, String especie, int edad, String raza) {
         ContentValues values = new ContentValues();
-        values.put(COL_NOMBRE, nombre);
-        values.put(COL_ESPECIE, especie);
-        values.put(COL_EDAD, edad);
-        values.put(COL_RAZA, raza == null ? "" : raza);
+        values.put(MascotaEntry.COLUMN_NOMBRE, nombre);
+        values.put(MascotaEntry.COLUMN_ESPECIE, especie);
+        values.put(MascotaEntry.COLUMN_EDAD, edad);
+        values.put(MascotaEntry.COLUMN_RAZA, raza == null ? "" : raza);
         return values;
     }
 
     private ContentValues crearValoresControl(long mascotaId, String tipo, String fecha, String estado, String observacion) {
         ContentValues values = new ContentValues();
-        values.put(COL_CONTROL_MASCOTA_ID, mascotaId);
-        values.put(COL_CONTROL_TIPO, tipo);
-        values.put(COL_CONTROL_FECHA, fecha);
-        values.put(COL_CONTROL_ESTADO, estado);
-        values.put(COL_CONTROL_OBSERVACION, observacion == null ? "" : observacion);
+        values.put(ControlEntry.COLUMN_MASCOTA_ID, mascotaId);
+        values.put(ControlEntry.COLUMN_TIPO, tipo);
+        values.put(ControlEntry.COLUMN_FECHA, fecha);
+        values.put(ControlEntry.COLUMN_ESTADO, estado);
+        values.put(ControlEntry.COLUMN_OBSERVACION, observacion == null ? "" : observacion);
         return values;
     }
 
     private ContentValues crearValoresVacuna(long mascotaId, String nombre, String fecha, String estado) {
         ContentValues values = new ContentValues();
-        values.put(COL_VACUNA_MASCOTA_ID, mascotaId);
-        values.put(COL_VACUNA_NOMBRE, nombre);
-        values.put(COL_VACUNA_FECHA, fecha);
-        values.put(COL_VACUNA_ESTADO, estado);
+        values.put(VacunaEntry.COLUMN_MASCOTA_ID, mascotaId);
+        values.put(VacunaEntry.COLUMN_NOMBRE, nombre);
+        values.put(VacunaEntry.COLUMN_FECHA, fecha);
+        values.put(VacunaEntry.COLUMN_ESTADO, estado);
+        return values;
+    }
+
+    private ContentValues crearValoresDesparasitacion(long mascotaId, String producto, String fecha,
+                                                        String proximaFecha, String observacion) {
+        ContentValues values = new ContentValues();
+        values.put(DesparasitacionEntry.COLUMN_MASCOTA_ID, mascotaId);
+        values.put(DesparasitacionEntry.COLUMN_PRODUCTO, producto);
+        values.put(DesparasitacionEntry.COLUMN_FECHA, fecha);
+        values.put(DesparasitacionEntry.COLUMN_PROXIMA_FECHA, proximaFecha);
+        values.put(DesparasitacionEntry.COLUMN_OBSERVACION, observacion == null ? "" : observacion);
         return values;
     }
 
     private Usuario crearUsuarioDesdeCursor(Cursor cursor) {
         return new Usuario(
-                cursor.getLong(cursor.getColumnIndexOrThrow(COL_USUARIO_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_USUARIO_NOMBRE)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_USUARIO_CORREO)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_USUARIO_PASSWORD_HASH))
+                cursor.getLong(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_NOMBRE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_CORREO)),
+                cursor.getString(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_PASSWORD_HASH))
         );
     }
 
     private Mascota crearMascotaDesdeCursor(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID));
-        long usuarioId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_MASCOTA_USUARIO_ID));
-        String nombre = cursor.getString(cursor.getColumnIndexOrThrow(COL_NOMBRE));
-        String especie = cursor.getString(cursor.getColumnIndexOrThrow(COL_ESPECIE));
-        int edad = cursor.getInt(cursor.getColumnIndexOrThrow(COL_EDAD));
-        String raza = cursor.getString(cursor.getColumnIndexOrThrow(COL_RAZA));
-        String fotoPath = cursor.getString(cursor.getColumnIndexOrThrow(COL_FOTO_PATH));
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_ID));
+        long usuarioId = cursor.getLong(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_USUARIO_ID));
+        String nombre = cursor.getString(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_NOMBRE));
+        String especie = cursor.getString(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_ESPECIE));
+        int edad = cursor.getInt(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_EDAD));
+        String raza = cursor.getString(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_RAZA));
+        String fotoPath = cursor.getString(cursor.getColumnIndexOrThrow(MascotaEntry.COLUMN_FOTO_PATH));
 
         return new Mascota(
                 id,
@@ -1107,24 +1213,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Control crearControlDesdeCursor(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CONTROL_ID));
-        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_CONTROL_MASCOTA_ID));
-        String tipo = cursor.getString(cursor.getColumnIndexOrThrow(COL_CONTROL_TIPO));
-        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(COL_CONTROL_FECHA));
-        String estado = cursor.getString(cursor.getColumnIndexOrThrow(COL_CONTROL_ESTADO));
-        String observacion = cursor.getString(cursor.getColumnIndexOrThrow(COL_CONTROL_OBSERVACION));
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_ID));
+        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_MASCOTA_ID));
+        String tipo = cursor.getString(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_TIPO));
+        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_FECHA));
+        String estado = cursor.getString(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_ESTADO));
+        String observacion = cursor.getString(cursor.getColumnIndexOrThrow(ControlEntry.COLUMN_OBSERVACION));
 
         return new Control(id, mascotaId, tipo, fecha, estado, observacion == null ? "" : observacion);
     }
 
     private Vacuna crearVacunaDesdeCursor(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_VACUNA_ID));
-        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_VACUNA_MASCOTA_ID));
-        String nombre = cursor.getString(cursor.getColumnIndexOrThrow(COL_VACUNA_NOMBRE));
-        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(COL_VACUNA_FECHA));
-        String estado = cursor.getString(cursor.getColumnIndexOrThrow(COL_VACUNA_ESTADO));
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_ID));
+        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_MASCOTA_ID));
+        String nombre = cursor.getString(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_NOMBRE));
+        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_FECHA));
+        String estado = cursor.getString(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_ESTADO));
 
         return new Vacuna(id, mascotaId, nombre, fecha, estado);
+    }
+
+    private Desparasitacion crearDesparasitacionDesdeCursor(Cursor cursor) {
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_ID));
+        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_MASCOTA_ID));
+        String mascotaNombre = "";
+        int indiceMascotaNombre = cursor.getColumnIndex("mascota_nombre");
+        if (indiceMascotaNombre >= 0) {
+            mascotaNombre = cursor.getString(indiceMascotaNombre);
+        }
+        String producto = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_PRODUCTO));
+        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_FECHA));
+        String proximaFecha = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_PROXIMA_FECHA));
+        String observacion = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_OBSERVACION));
+
+        return new Desparasitacion(
+                id,
+                mascotaId,
+                mascotaNombre,
+                producto,
+                fecha,
+                proximaFecha,
+                observacion == null ? "" : observacion
+        );
     }
 
     private String normalizarCorreo(String correo) {

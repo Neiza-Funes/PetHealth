@@ -170,6 +170,12 @@
     <string name="error_fecha_desparasitacion">Ingrese la fecha de aplicación</string>
     <string name="error_proxima_desparasitacion">Ingrese la próxima fecha</string>
     <string name="toast_desparasitacion_registrada">Desparasitación registrada correctamente</string>
+    <string name="toast_error_registrar_desparasitacion">No se pudo guardar la desparasitación</string>
+    <string name="eliminar_desparasitacion">Eliminar desparasitación</string>
+    <string name="confirmar_eliminar_desparasitacion">¿Deseas eliminar este registro de desparasitación?</string>
+    <string name="toast_desparasitacion_eliminada">Desparasitación eliminada correctamente</string>
+    <string name="toast_error_eliminar_desparasitacion">No se pudo eliminar la desparasitación</string>
+    <string name="formato_historial_desparasitacion">Desparasitación · %1$s</string>
     <string name="formato_producto_desparasitacion">Producto: %1$s</string>
     <string name="formato_fecha_desparasitacion">Aplicación: %1$s</string>
     <string name="formato_proxima_desparasitacion">Próxima: %1$s</string>

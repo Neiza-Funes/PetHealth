@@ -1,15 +1,19 @@
 package com.example.pethealth;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RegistrarDesparasitacionActivity extends Activity {
 
@@ -18,30 +22,37 @@ public class RegistrarDesparasitacionActivity extends Activity {
     private EditText edtFecha;
     private EditText edtProximaFecha;
     private EditText edtObservacion;
+    private Button btnGuardar;
+
+    private DatabaseHelper databaseHelper;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registrar_desparasitacion);
 
+        databaseHelper = new DatabaseHelper(this);
+
         edtMascota = findViewById(R.id.edtMascotaDesparasitacion);
         edtProducto = findViewById(R.id.edtProductoDesparasitacion);
         edtFecha = findViewById(R.id.edtFechaDesparasitacion);
         edtProximaFecha = findViewById(R.id.edtProximaDesparasitacion);
         edtObservacion = findViewById(R.id.edtObservacionDesparasitacion);
-        Button btnGuardar = findViewById(R.id.btnGuardarDesparasitacion);
+        btnGuardar = findViewById(R.id.btnGuardarDesparasitacion);
 
         btnGuardar.setOnClickListener(v -> guardarDesparasitacion());
     }
 
     private void guardarDesparasitacion() {
-        String mascota = edtMascota.getText().toString().trim();
+        String mascotaNombre = edtMascota.getText().toString().trim();
         String producto = edtProducto.getText().toString().trim();
         String fecha = edtFecha.getText().toString().trim();
         String proximaFecha = edtProximaFecha.getText().toString().trim();
         String observacion = edtObservacion.getText().toString().trim();
 
-        if (mascota.isEmpty()) {
+        if (mascotaNombre.isEmpty()) {
             edtMascota.setError(getString(R.string.error_mascota_desparasitacion));
             edtMascota.requestFocus();
             return;
@@ -77,16 +88,54 @@ public class RegistrarDesparasitacionActivity extends Activity {
             return;
         }
 
-        Toast.makeText(this, R.string.toast_desparasitacion_registrada, Toast.LENGTH_SHORT).show();
+        btnGuardar.setEnabled(false);
+        executorService.execute(() -> {
+            Mascota mascota = buscarMascotaPorNombre(mascotaNombre);
+            if (mascota == null) {
+                mainHandler.post(() -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+                    btnGuardar.setEnabled(true);
+                    edtMascota.setError(getString(R.string.toast_mascota_no_encontrada));
+                    edtMascota.requestFocus();
+                });
+                return;
+            }
 
-        Intent intent = new Intent(RegistrarDesparasitacionActivity.this, DesparasitacionActivity.class);
-        intent.putExtra("mascotaDesparasitacion", mascota);
-        intent.putExtra("productoDesparasitacion", producto);
-        intent.putExtra("fechaDesparasitacion", fecha);
-        intent.putExtra("proximaDesparasitacion", proximaFecha);
-        intent.putExtra("observacionDesparasitacion", observacion);
-        startActivity(intent);
-        finish();
+            Desparasitacion desparasitacion = new Desparasitacion(
+                    mascota.getId(),
+                    producto,
+                    fecha,
+                    proximaFecha,
+                    observacion
+            );
+
+            long id = databaseHelper.insertarDesparasitacion(desparasitacion);
+            mainHandler.post(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                btnGuardar.setEnabled(true);
+                if (id == -1) {
+                    Toast.makeText(this, R.string.toast_error_registrar_desparasitacion, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Toast.makeText(this, R.string.toast_desparasitacion_registrada, Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        });
+    }
+
+    private Mascota buscarMascotaPorNombre(String nombreBuscado) {
+        List<Mascota> mascotas = databaseHelper.obtenerMascotas();
+        for (Mascota mascota : mascotas) {
+            if (mascota.getNombre().equalsIgnoreCase(nombreBuscado)) {
+                return mascota;
+            }
+        }
+        return null;
     }
 
     private boolean fechaValida(String fecha) {
@@ -102,5 +151,14 @@ public class RegistrarDesparasitacionActivity extends Activity {
         } catch (ParseException e) {
             return false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        executorService.shutdown();
+        if (databaseHelper != null) {
+            databaseHelper.close();
+        }
+        super.onDestroy();
     }
 }

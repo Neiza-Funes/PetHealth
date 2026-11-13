@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,12 +15,17 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MisMascotasActivity extends Activity {
 
     private DatabaseHelper databaseHelper;
     private LinearLayout contenedorMascotas;
     private TextView txtSinMascotas;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +46,23 @@ public class MisMascotasActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Se vuelve a consultar SQLite para reflejar una foto recién guardada en el detalle.
-        cargarMascotas();
+        cargarMascotasAsincrono();
     }
 
-    private void cargarMascotas() {
-        contenedorMascotas.removeAllViews();
+    private void cargarMascotasAsincrono() {
+        executorService.execute(() -> {
+            List<Mascota> mascotas = databaseHelper.obtenerMascotas();
+            mainHandler.post(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                mostrarMascotas(mascotas);
+            });
+        });
+    }
 
-        List<Mascota> mascotas = databaseHelper.obtenerMascotas();
+    private void mostrarMascotas(List<Mascota> mascotas) {
+        contenedorMascotas.removeAllViews();
         txtSinMascotas.setVisibility(mascotas.isEmpty() ? View.VISIBLE : View.GONE);
 
         for (Mascota mascota : mascotas) {
@@ -81,7 +97,6 @@ public class MisMascotasActivity extends Activity {
     }
 
     private void mostrarFotoPerfil(ImageView imageView, String fotoPath) {
-        // Si la mascota no tiene foto, se usa el logo de PetHealth como placeholder sencillo.
         if (fotoPath == null || fotoPath.isEmpty()) {
             imageView.setImageResource(R.drawable.ic_pethealth_logo);
             return;
@@ -110,6 +125,7 @@ public class MisMascotasActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        executorService.shutdown();
         if (databaseHelper != null) {
             databaseHelper.close();
         }

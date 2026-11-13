@@ -148,7 +148,7 @@ public class DetalleMascotaActivity extends Activity {
         mostrarDatosPrincipales(nombre, especie, edad, raza);
         mostrarFotoGuardada(fotoPath);
         limpiarInformacionSalud();
-        mostrarHistorial(mascotaId, nombre);
+        mostrarHistorial(mascotaId);
         mostrarControles(mascotaId, nombre);
         mostrarVacunas(mascotaId, nombre);
     }
@@ -192,20 +192,27 @@ public class DetalleMascotaActivity extends Activity {
         txtVacunasVacio.setVisibility(View.GONE);
     }
 
-    private void mostrarHistorial(long id, String nombre) {
-        boolean esLuna = id == 1 || (id == -1 && nombre.equals(getString(R.string.mascota_luna)));
-        boolean esMilo = id == 2 || (id == -1 && nombre.equals(getString(R.string.mascota_milo)));
-
-        if (esLuna) {
-            txtHistorial1.setText(R.string.luna_historial_vacuna);
-            txtHistorial2.setText(R.string.luna_historial_desparasitacion);
-            txtHistorial1.setVisibility(View.VISIBLE);
-            txtHistorial2.setVisibility(View.VISIBLE);
-        } else if (esMilo) {
-            txtHistorial1.setText(R.string.milo_historial_desparasitacion);
-            txtHistorial1.setVisibility(View.VISIBLE);
-        } else {
+    private void mostrarHistorial(long mascotaId) {
+        if (mascotaId == -1) {
             txtHistorialVacio.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        List<Desparasitacion> desparasitaciones = databaseHelper.obtenerDesparasitacionesPorMascota(mascotaId);
+        if (desparasitaciones.isEmpty()) {
+            txtHistorialVacio.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        int ultimoIndice = desparasitaciones.size() - 1;
+        Desparasitacion ultima = desparasitaciones.get(ultimoIndice);
+        txtHistorial1.setText(getString(R.string.formato_historial_desparasitacion, ultima.getFecha()));
+        txtHistorial1.setVisibility(View.VISIBLE);
+
+        if (ultimoIndice > 0) {
+            Desparasitacion anterior = desparasitaciones.get(ultimoIndice - 1);
+            txtHistorial2.setText(getString(R.string.formato_historial_desparasitacion, anterior.getFecha()));
+            txtHistorial2.setVisibility(View.VISIBLE);
         }
     }
 
