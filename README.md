@@ -66,6 +66,26 @@ PetHealthContract → DatabaseHelper → SQLite
 
 El Contract representa el esquema que PetHealth ya utilizaba. No se cambiaron nombres de tablas o columnas, no se agregaron restricciones `FOREIGN KEY` y la versión de la base de datos continúa en `5`.
 
+
+## Seguridad y buenas prácticas
+
+En este avance se revisaron medidas básicas de seguridad sin cambiar la estructura de la base de datos ni las funciones principales de PetHealth.
+
+- Las consultas que reciben datos variables utilizan argumentos parametrizados con `?` y `selectionArgs`.
+- Las inserciones y actualizaciones utilizan `ContentValues`.
+- Los objetos `Cursor` utilizados por `DatabaseHelper` se cierran después de cada consulta.
+- `PetHealthContract` continúa centralizando los nombres de tablas y columnas utilizados por SQLite.
+- `MainActivity` se mantiene como la Activity pública de inicio y las Activities internas utilizan `android:exported="false"`.
+- Se configuró `android:allowBackup="false"` para reducir la exposición de los datos locales mediante copias de respaldo.
+- `LoginActivity` y `RegistroActivity` utilizan `FLAG_SECURE` por tratarse de pantallas donde se ingresan credenciales.
+- Las contraseñas se almacenan mediante hash SHA-256 dentro del alcance académico del proyecto; no se guardan contraseñas ni hashes en `SharedPreferences`.
+- `SessionManager` conserva únicamente los datos necesarios para identificar la sesión activa y los elimina al cerrar sesión.
+- Mascotas, controles y vacunas continúan filtrándose mediante `usuario_id` y `mascota_id` según corresponda.
+
+La fotografía de mascota se obtiene mediante `MediaStore.ACTION_IMAGE_CAPTURE` y PetHealth recibe el `Bitmap` devuelto por la aplicación de cámara. Luego la imagen se guarda dentro del almacenamiento privado de la aplicación. Como no se entrega una URI de archivo externa mediante `EXTRA_OUTPUT`, la implementación actual no necesita `FileProvider`. El permiso de cámara se mantiene porque el flujo actual lo comprueba y solicita antes de abrir la captura.
+
+Estas medidas corresponden a buenas prácticas básicas de seguridad dentro del alcance académico del proyecto y no representan un esquema de seguridad avanzado de producción.
+
 ## Diagrama de Navegación
 
 El siguiente diagrama corresponde al material preparado para PetHealth y resume el flujo principal entre gestión de usuarios, mascotas, controles y vacunas.
@@ -89,6 +109,6 @@ La tabla de desparasitación no se incorpora en este modelo porque el Avance 21 
 3. Esperar que Gradle termine de sincronizar.
 4. Ejecutar la aplicación en un emulador o dispositivo Android compatible.
 
-## Avance 23
+## Avance 24
 
-Este avance continúa la documentación incorporada en el Avance 22 y agrega `PetHealthContract` para ordenar las constantes de SQLite. `DatabaseHelper` fue adaptado para usar el Contract sin cambiar el esquema de la base de datos ni la funcionalidad de Login, sesión, mascotas, controles, vacunas, cámara o navegación.
+Este avance mantiene la organización mediante `PetHealthContract` e incorpora una revisión de seguridad básica. Se ajustó el Manifest para deshabilitar copias de respaldo y se agregó `FLAG_SECURE` en Login y Registro. También se revisaron consultas SQLite, cursores, sesión, contraseñas y el flujo actual de cámara sin cambiar `VERSION_BD = 5`, el esquema de las tablas ni las funcionalidades existentes.
