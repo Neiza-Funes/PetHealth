@@ -1,64 +1,82 @@
-# PetHealth
+# PetHealth - Aplicación Móvil de Gestión de Salud Animal
 
-## Descripción
+> PetHealth es una aplicación Android desarrollada para apoyar el registro y seguimiento de información relacionada con la salud y cuidado de las mascotas, permitiendo mantener sus datos organizados de forma local dentro del dispositivo.
 
-PetHealth es una aplicación Android pensada para apoyar en el cuidado y seguimiento de la salud de las mascotas.
+## Ficha Técnica del Proyecto
 
-La idea del proyecto es poder guardar en un solo lugar información importante de cada mascota, como sus vacunas, controles médicos y desparasitaciones, además de mantener sus datos principales organizados.
+- **Nombre de la aplicación:** PetHealth
+- **Asignatura:** Programación Android (IEI-093)
+- **Institución:** Santo Tomás
+- **Estudiante:** Neiza Jazmín Funes Bautista
+- **Lenguaje:** Java 17
+- **Interfaz:** XML
+- **minSdk:** 29
+- **compileSdk:** 35
+- **targetSdk:** 35
+- **Persistencia:** SQLite mediante `SQLiteOpenHelper`
+- **Construcción:** Gradle Groovy
 
-El proyecto se ha ido desarrollando de manera progresiva durante la asignatura de Programación Android, agregando nuevas funciones y mejorando su organización a medida que avanza el semestre.
+## Propósito y Problema que Resuelve
 
-## Objetivo
+Muchas veces la información relacionada con las mascotas, como vacunas, controles médicos o desparasitaciones, se encuentra separada o puede ser difícil de recordar con el tiempo.
 
-El objetivo de PetHealth es crear una aplicación sencilla y fácil de utilizar que permita registrar mascotas y mantener ordenada información relacionada con sus cuidados.
+PetHealth busca facilitar este proceso permitiendo mantener en un solo lugar los datos principales de cada mascota y sus registros de cuidado.
 
-Con la aplicación se busca facilitar el acceso a datos como vacunas, controles y desparasitaciones de cada mascota, manteniendo la información asociada al usuario que tiene la sesión iniciada.
+La aplicación permite que cada usuario mantenga sus propias mascotas registradas y pueda consultar información relacionada con sus controles, vacunas y desparasitaciones.
 
-## Funcionalidades actuales
+## Funcionalidades Principales
 
-Actualmente PetHealth permite:
+Actualmente PetHealth cuenta con las siguientes funcionalidades:
 
-- registrar usuarios e iniciar sesión;
-- mantener una sesión de usuario;
-- registrar mascotas;
-- ver el detalle de cada mascota;
-- editar la información de las mascotas;
-- agregar una fotografía de la mascota utilizando la cámara;
-- registrar, visualizar y editar controles;
-- registrar, visualizar y editar vacunas;
-- registrar y visualizar desparasitaciones;
-- guardar la información de forma local utilizando SQLite.
+- Registro de usuarios.
+- Inicio de sesión.
+- Manejo de sesión del usuario.
+- Registro de mascotas.
+- Listado de mascotas asociadas al usuario.
+- Visualización del detalle de una mascota.
+- Edición de información de mascotas.
+- Fotografía de mascota utilizando la cámara.
+- Registro y visualización de controles médicos.
+- Edición de controles.
+- Registro y visualización de vacunas.
+- Edición de vacunas.
+- Registro de desparasitaciones.
+- Listado de desparasitaciones por mascota.
+- Eliminación de registros de desparasitación.
+- Almacenamiento local mediante SQLite.
+- Separación de información según el usuario y la mascota seleccionada.
 
-## Tecnologías utilizadas
+## Stack Tecnológico y Estructura
 
-- Java 17
-- XML
-- Android Studio
-- Gradle Groovy
-- SQLite
-- SQLiteOpenHelper
-- RecyclerView
-- SharedPreferences
-- ExecutorService
+PetHealth fue desarrollada de forma nativa para Android utilizando herramientas vistas durante la asignatura.
 
-## Requisitos
+Las principales tecnologías utilizadas son:
 
-- minSdk 29
-- compileSdk 35
-- targetSdk 35
-- Java 17
+- **Android Studio** como entorno de desarrollo.
+- **Java 17** para la lógica de la aplicación.
+- **XML** para la construcción de las interfaces.
+- **Gradle Groovy** para la configuración del proyecto.
+- **SQLite** para el almacenamiento local.
+- **SQLiteOpenHelper** para la creación y administración de la base de datos.
+- **RecyclerView** para mostrar listados dinámicos.
+- **SharedPreferences** para mantener información básica de la sesión.
+- **ExecutorService** para ejecutar algunas operaciones de base de datos fuera del hilo principal.
 
-## Base de datos
+El proyecto también utiliza una clase `PetHealthContract` para mantener organizados los nombres de tablas y columnas utilizados por SQLite.
 
-PetHealth utiliza SQLite para guardar la información de forma local dentro de la aplicación.
+## Modelo de Persistencia SQLite
 
-La organización principal de la base de datos se apoya en:
+PetHealth utiliza una base de datos SQLite local para almacenar la información de usuarios, mascotas y sus distintos registros.
+
+La estructura utilizada se puede representar de forma simple de la siguiente manera:
 
 ```text
 PetHealthContract → DatabaseHelper → SQLite
 ```
 
-Actualmente se utilizan las siguientes tablas:
+`PetHealthContract` mantiene centralizados los nombres de las tablas y columnas, mientras que `DatabaseHelper` se encarga de crear la base de datos y realizar las operaciones necesarias.
+
+Actualmente la base de datos posee las siguientes tablas:
 
 - `usuarios`
 - `mascotas`
@@ -66,66 +84,112 @@ Actualmente se utilizan las siguientes tablas:
 - `vacunas`
 - `desparasitaciones`
 
-De esta forma, cada usuario puede trabajar con sus mascotas y cada mascota puede mantener sus propios controles, vacunas y registros de desparasitación.
+Los registros se relacionan utilizando identificadores como:
 
-## Seguridad básica
+- `usuario_id`
+- `mascota_id`
 
-Durante el desarrollo también se incorporaron algunas buenas prácticas básicas para cuidar mejor la información de la aplicación.
+De esta forma, las mascotas pueden asociarse al usuario que mantiene la sesión iniciada y los controles, vacunas y desparasitaciones pueden relacionarse con la mascota correspondiente.
+
+## Seguridad y Buenas Prácticas
+
+Dentro del alcance académico del proyecto se incorporaron algunas buenas prácticas para mejorar el manejo de los datos.
 
 Entre ellas se encuentran:
 
-- consultas SQLite parametrizadas;
-- uso de `ContentValues` y `selectionArgs`;
-- cierre de los objetos `Cursor` después de utilizarlos;
-- almacenamiento de contraseñas mediante hash;
-- manejo de la sesión mediante `SessionManager`;
-- uso de `FLAG_SECURE` en las pantallas de inicio de sesión y registro;
-- configuración de `allowBackup="false"`.
+- Consultas SQLite parametrizadas.
+- Uso de `selectionArgs`.
+- Uso de `ContentValues` para inserciones y actualizaciones.
+- Cierre correcto de objetos `Cursor`.
+- Almacenamiento de contraseñas mediante hash.
+- Uso de `SessionManager` para mantener los datos mínimos necesarios de la sesión.
+- `FLAG_SECURE` en las pantallas de Login y Registro.
+- `android:allowBackup="false"`.
+- Activities internas configuradas con `android:exported="false"` cuando corresponde.
 
-Estas medidas corresponden a mejoras básicas realizadas dentro del contexto académico del proyecto.
+Estas medidas buscan mantener una estructura más segura y ordenada dentro del nivel trabajado durante el desarrollo de la aplicación.
 
-## Organización del proyecto
+## ⚙️ Procesamiento en Segundo Plano
 
-Para mantener el código más ordenado, las clases se encuentran separadas según la función que cumplen dentro de PetHealth.
+Algunas operaciones relacionadas con SQLite utilizan `ExecutorService`.
+
+Esto permite realizar consultas o escrituras de base de datos fuera del hilo principal de Android y luego actualizar la interfaz cuando corresponde.
+
+El objetivo es evitar que ciertas operaciones puedan afectar la fluidez de la aplicación mientras se consultan o guardan datos.
+
+## Organización del Proyecto
+
+A medida que PetHealth fue creciendo, las clases se organizaron por paquetes para facilitar su lectura y mantenimiento.
 
 ```text
-auth/              Inicio de sesión, registro y sesión
-database/          Base de datos SQLite
-model/             Modelos de datos
-adapter/           Adaptadores utilizados en los listados
-mascota/           Gestión de mascotas
-control/           Controles médicos
-vacuna/            Vacunas
-desparasitacion/   Desparasitación
+com.example.pethealth
+├── adapter/
+├── auth/
+├── control/
+├── database/
+├── desparasitacion/
+├── mascota/
+├── model/
+├── vacuna/
+└── InicioActivity
 ```
 
-Esta organización permite encontrar de forma más sencilla las clases relacionadas con cada parte de la aplicación.
+La organización principal corresponde a:
+
+- `adapter/`: clases utilizadas por los RecyclerView.
+- `auth/`: Login, Registro, sesión y utilidades relacionadas.
+- `control/`: gestión de controles médicos.
+- `database/`: clases relacionadas con SQLite.
+- `desparasitacion/`: registro y visualización de desparasitaciones.
+- `mascota/`: registro, listado, detalle y edición de mascotas.
+- `model/`: clases que representan los datos utilizados por la aplicación.
+- `vacuna/`: registro, listado y edición de vacunas.
+- `InicioActivity`: pantalla principal desde donde se accede a los distintos módulos.
+
+## Capturas de Pantalla
+
+En esta sección se pueden incorporar posteriormente capturas reales de las principales pantallas de PetHealth, por ejemplo:
+
+- Login.
+- Inicio.
+- Mis Mascotas.
+- Detalle de mascota.
+- Vacunas.
+- Controles médicos.
+- Desparasitación.
+
+Las capturas pueden agregarse cuando se tengan disponibles las imágenes definitivas del proyecto.
 
 ## Diagramas
 
 ### Diagrama de Navegación
 
-El siguiente diagrama representa de manera general la navegación entre las principales pantallas de PetHealth.
+El siguiente diagrama representa de forma general la navegación entre las principales pantallas de PetHealth.
 
 ![Diagrama de Navegación](./docs/diagramas/PetHealth_Diagrama_Navegacion.png)
 
 ### Modelo Entidad-Relación
 
-El modelo muestra la estructura principal utilizada para organizar la información almacenada en SQLite.
+El modelo muestra la estructura utilizada para representar la información almacenada mediante SQLite.
 
 ![Modelo Entidad-Relación](./docs/diagramas/PetHealth_MER_SQLite.png)
 
-El proyecto actual también incorpora el registro de desparasitaciones asociado a cada mascota.
+## Instalación y Ejecución
 
-## Instalación
+Para ejecutar PetHealth:
 
-1. Descargar o clonar el proyecto.
-2. Abrir la carpeta en Android Studio.
-3. Esperar que Gradle termine de sincronizar.
-4. Ejecutar la aplicación en un emulador o dispositivo Android compatible.
+1. Clonar o descargar el repositorio.
+2. Abrir el proyecto utilizando Android Studio.
+3. Esperar que finalice la sincronización de Gradle.
+4. Seleccionar un emulador o dispositivo Android compatible.
+5. Ejecutar la aplicación desde Android Studio.
 
-## Autora
+El proyecto requiere como mínimo Android API 29.
 
-**Neiza Funes**
+##  Autora
 
-Proyecto desarrollado para la asignatura de Programación Android.
+**Neiza Jazmín Funes Bautista**
+
+Proyecto desarrollado como parte de la asignatura **Programación Android (IEI-093)** de Santo Tomás.
+
+PetHealth fue desarrollado de manera progresiva durante la asignatura, incorporando funcionalidades relacionadas con persistencia local, manejo de sesiones, RecyclerView, cámara, seguridad básica y organización del código.
