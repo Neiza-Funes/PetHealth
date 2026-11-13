@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'PetHealth_Avance24'
+rootProject.name = 'PetHealth_Avance25'
 include ':app'

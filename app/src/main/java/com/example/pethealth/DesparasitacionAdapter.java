@@ -15,19 +15,19 @@ import java.util.List;
 public class DesparasitacionAdapter extends RecyclerView.Adapter<DesparasitacionAdapter.DesparasitacionViewHolder> {
 
     public interface OnDesparasitacionListener {
-        void onEditar(long id);
-        void onEliminar(Control control);
+        void onVerMascota(long mascotaId);
+        void onEliminar(Desparasitacion desparasitacion);
     }
 
-    private final List<Control> listaDesparasitaciones;
+    private final List<Desparasitacion> listaDesparasitaciones;
     private final OnDesparasitacionListener listener;
-    private final DatabaseHelper databaseHelper;
     private final Context context;
 
-    public DesparasitacionAdapter(List<Control> listaDesparasitaciones, OnDesparasitacionListener listener, DatabaseHelper databaseHelper, Context context) {
+    public DesparasitacionAdapter(List<Desparasitacion> listaDesparasitaciones,
+                                  OnDesparasitacionListener listener,
+                                  Context context) {
         this.listaDesparasitaciones = listaDesparasitaciones;
         this.listener = listener;
-        this.databaseHelper = databaseHelper;
         this.context = context;
     }
 
@@ -40,29 +40,38 @@ public class DesparasitacionAdapter extends RecyclerView.Adapter<Desparasitacion
 
     @Override
     public void onBindViewHolder(@NonNull DesparasitacionViewHolder holder, int position) {
-        Control control = listaDesparasitaciones.get(position);
-        Mascota mascota = databaseHelper.obtenerMascotaPorId(control.getMascotaId());
+        Desparasitacion desparasitacion = listaDesparasitaciones.get(position);
 
-        if (mascota != null) {
-            holder.txtMascota.setText(mascota.getNombre());
-        } else {
-            holder.txtMascota.setText("");
-        }
+        holder.txtMascota.setText(desparasitacion.getMascotaNombre());
+        holder.txtTipo.setText(context.getString(
+                R.string.formato_producto_desparasitacion,
+                desparasitacion.getProducto()
+        ));
+        holder.txtFecha.setText(context.getString(
+                R.string.formato_fecha_desparasitacion,
+                desparasitacion.getFecha()
+        ));
+        holder.txtEstado.setText(context.getString(
+                R.string.formato_proxima_desparasitacion,
+                desparasitacion.getProximaFecha()
+        ));
 
-        holder.txtTipo.setText(context.getString(R.string.formato_tipo_control, control.getTipo()));
-        holder.txtFecha.setText(context.getString(R.string.formato_fecha_control, control.getFecha()));
-        holder.txtEstado.setText(context.getString(R.string.formato_estado_control, control.getEstado()));
-
-        if (control.getObservacion() == null || control.getObservacion().trim().isEmpty()) {
+        if (desparasitacion.getObservacion().trim().isEmpty()) {
             holder.txtObservacion.setVisibility(View.GONE);
         } else {
-            holder.txtObservacion.setText(context.getString(R.string.formato_observacion_control, control.getObservacion()));
+            holder.txtObservacion.setText(context.getString(
+                    R.string.formato_observacion_desparasitacion,
+                    desparasitacion.getObservacion()
+            ));
             holder.txtObservacion.setVisibility(View.VISIBLE);
         }
 
-        holder.btnVerMascota.setOnClickListener(v -> {});
-        holder.btnEditar.setOnClickListener(v -> listener.onEditar(control.getId()));
-        holder.btnEliminar.setOnClickListener(v -> listener.onEliminar(control));
+        holder.btnVerMascota.setOnClickListener(v ->
+                listener.onVerMascota(desparasitacion.getMascotaId()));
+
+        // El módulo todavía no posee una pantalla de edición propia.
+        holder.btnEditar.setVisibility(View.GONE);
+        holder.btnEliminar.setOnClickListener(v -> listener.onEliminar(desparasitacion));
     }
 
     @Override

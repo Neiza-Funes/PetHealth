@@ -65,4 +65,18 @@ public final class PetHealthContract {
         private VacunaEntry() {
         }
     }
+    /** Tabla que almacena los registros de desparasitación de las mascotas. */
+    public static final class DesparasitacionEntry implements BaseColumns {
+        public static final String TABLE_NAME = "desparasitaciones";
+        public static final String COLUMN_ID = "id";
+        public static final String COLUMN_MASCOTA_ID = "mascota_id";
+        public static final String COLUMN_PRODUCTO = "producto";
+        public static final String COLUMN_FECHA = "fecha";
+        public static final String COLUMN_PROXIMA_FECHA = "proxima_fecha";
+        public static final String COLUMN_OBSERVACION = "observacion";
+
+        private DesparasitacionEntry() {
+        }
+    }
+
 }

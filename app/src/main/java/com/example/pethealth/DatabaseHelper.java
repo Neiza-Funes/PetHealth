@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.pethealth.database.PetHealthContract.ControlEntry;
+import com.example.pethealth.database.PetHealthContract.DesparasitacionEntry;
 import com.example.pethealth.database.PetHealthContract.MascotaEntry;
 import com.example.pethealth.database.PetHealthContract.UsuarioEntry;
 import com.example.pethealth.database.PetHealthContract.VacunaEntry;
@@ -19,7 +20,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String NOMBRE_BD = "pethealth.db";
-    public static final int VERSION_BD = 5;
+    public static final int VERSION_BD = 6;
 
     public static final String NOMBRE_USUARIO_NEI = "Nei";
     public static final String CORREO_USUARIO_NEI = "nfunes@gmail.com";
@@ -52,6 +53,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         crearTablaVacunas(db);
         insertarVacunaInicial(db, lunaId, "Antirrábica", "15/09/2026", ESTADO_APLICADA);
         insertarVacunaInicial(db, miloId, "Triple felina", "28/09/2026", ESTADO_PENDIENTE);
+
+        crearTablaDesparasitaciones(db);
     }
 
     @Override
@@ -78,6 +81,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (oldVersion < 5) {
             asegurarEstructuraUsuariosYPropiedad(db);
+        }
+
+        if (oldVersion < 6) {
+            crearTablaDesparasitaciones(db);
         }
     }
 
@@ -223,6 +230,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 VacunaEntry.COLUMN_NOMBRE + " TEXT NOT NULL, " +
                 VacunaEntry.COLUMN_FECHA + " TEXT NOT NULL, " +
                 VacunaEntry.COLUMN_ESTADO + " TEXT NOT NULL" +
+                ")";
+
+        db.execSQL(crearTabla);
+    }
+
+    private void crearTablaDesparasitaciones(SQLiteDatabase db) {
+        String crearTabla = "CREATE TABLE IF NOT EXISTS " + DesparasitacionEntry.TABLE_NAME + " (" +
+                DesparasitacionEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DesparasitacionEntry.COLUMN_MASCOTA_ID + " INTEGER NOT NULL, " +
+                DesparasitacionEntry.COLUMN_PRODUCTO + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_FECHA + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_PROXIMA_FECHA + " TEXT NOT NULL, " +
+                DesparasitacionEntry.COLUMN_OBSERVACION + " TEXT" +
                 ")";
 
         db.execSQL(crearTabla);
@@ -645,6 +665,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     new String[]{String.valueOf(id)}
             );
 
+            db.delete(
+                    DesparasitacionEntry.TABLE_NAME,
+                    DesparasitacionEntry.COLUMN_MASCOTA_ID + " = ?",
+                    new String[]{String.valueOf(id)}
+            );
+
             int filasEliminadas = db.delete(
                     MascotaEntry.TABLE_NAME,
                     MascotaEntry.COLUMN_ID + " = ? AND " + MascotaEntry.COLUMN_USUARIO_ID + " = ?",
@@ -982,6 +1008,103 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return vacunas;
     }
 
+    public long insertarDesparasitacion(Desparasitacion desparasitacion) {
+        if (desparasitacion == null) {
+            return -1;
+        }
+
+        long usuarioId = obtenerUsuarioSesionId();
+        SQLiteDatabase db = getWritableDatabase();
+        if (!mascotaPerteneceAUsuario(db, desparasitacion.getMascotaId(), usuarioId)) {
+            return -1;
+        }
+
+        ContentValues values = crearValoresDesparasitacion(
+                desparasitacion.getMascotaId(),
+                desparasitacion.getProducto(),
+                desparasitacion.getFecha(),
+                desparasitacion.getProximaFecha(),
+                desparasitacion.getObservacion()
+        );
+
+        long id = db.insert(DesparasitacionEntry.TABLE_NAME, null, values);
+        if (id != -1) {
+            desparasitacion.setId(id);
+        }
+        return id;
+    }
+
+    public List<Desparasitacion> obtenerDesparasitaciones() {
+        return consultarDesparasitaciones(null, null);
+    }
+
+    public List<Desparasitacion> obtenerDesparasitacionesPorMascota(long mascotaId) {
+        return consultarDesparasitaciones(
+                "d." + DesparasitacionEntry.COLUMN_MASCOTA_ID + " = ?",
+                new String[]{String.valueOf(mascotaId)}
+        );
+    }
+
+    public boolean eliminarDesparasitacion(long id) {
+        long usuarioId = obtenerUsuarioSesionId();
+        if (usuarioId <= 0) {
+            return false;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        int filasEliminadas = db.delete(
+                DesparasitacionEntry.TABLE_NAME,
+                DesparasitacionEntry.COLUMN_ID + " = ? AND " + DesparasitacionEntry.COLUMN_MASCOTA_ID +
+                        " IN (SELECT " + MascotaEntry.COLUMN_ID + " FROM " + MascotaEntry.TABLE_NAME +
+                        " WHERE " + MascotaEntry.COLUMN_USUARIO_ID + " = ?)",
+                new String[]{String.valueOf(id), String.valueOf(usuarioId)}
+        );
+        return filasEliminadas > 0;
+    }
+
+    private List<Desparasitacion> consultarDesparasitaciones(String condicionExtra, String[] argumentosExtra) {
+        List<Desparasitacion> desparasitaciones = new ArrayList<>();
+        long usuarioId = obtenerUsuarioSesionId();
+        if (usuarioId <= 0) {
+            return desparasitaciones;
+        }
+
+        List<String> argumentos = new ArrayList<>();
+        argumentos.add(String.valueOf(usuarioId));
+        if (argumentosExtra != null) {
+            for (String argumento : argumentosExtra) {
+                argumentos.add(argumento);
+            }
+        }
+
+        String where = "m." + MascotaEntry.COLUMN_USUARIO_ID + " = ?";
+        if (condicionExtra != null && !condicionExtra.trim().isEmpty()) {
+            where += " AND " + condicionExtra;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        String ordenFecha = crearOrdenFecha("d." + DesparasitacionEntry.COLUMN_FECHA) +
+                ", d." + DesparasitacionEntry.COLUMN_ID + " ASC";
+        Cursor cursor = db.rawQuery(
+                "SELECT d.*, m." + MascotaEntry.COLUMN_NOMBRE + " AS mascota_nombre FROM " +
+                        DesparasitacionEntry.TABLE_NAME + " d " +
+                        "INNER JOIN " + MascotaEntry.TABLE_NAME + " m ON m." + MascotaEntry.COLUMN_ID +
+                        " = d." + DesparasitacionEntry.COLUMN_MASCOTA_ID + " " +
+                        "WHERE " + where + " ORDER BY " + ordenFecha,
+                argumentos.toArray(new String[0])
+        );
+
+        try {
+            while (cursor.moveToNext()) {
+                desparasitaciones.add(crearDesparasitacionDesdeCursor(cursor));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return desparasitaciones;
+    }
+
     private boolean mascotaPerteneceAUsuario(SQLiteDatabase db, long mascotaId, long usuarioId) {
         if (mascotaId <= 0 || usuarioId <= 0) {
             return false;
@@ -1049,6 +1172,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return values;
     }
 
+    private ContentValues crearValoresDesparasitacion(long mascotaId, String producto, String fecha,
+                                                        String proximaFecha, String observacion) {
+        ContentValues values = new ContentValues();
+        values.put(DesparasitacionEntry.COLUMN_MASCOTA_ID, mascotaId);
+        values.put(DesparasitacionEntry.COLUMN_PRODUCTO, producto);
+        values.put(DesparasitacionEntry.COLUMN_FECHA, fecha);
+        values.put(DesparasitacionEntry.COLUMN_PROXIMA_FECHA, proximaFecha);
+        values.put(DesparasitacionEntry.COLUMN_OBSERVACION, observacion == null ? "" : observacion);
+        return values;
+    }
+
     private Usuario crearUsuarioDesdeCursor(Cursor cursor) {
         return new Usuario(
                 cursor.getLong(cursor.getColumnIndexOrThrow(UsuarioEntry.COLUMN_ID)),
@@ -1097,6 +1231,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String estado = cursor.getString(cursor.getColumnIndexOrThrow(VacunaEntry.COLUMN_ESTADO));
 
         return new Vacuna(id, mascotaId, nombre, fecha, estado);
+    }
+
+    private Desparasitacion crearDesparasitacionDesdeCursor(Cursor cursor) {
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_ID));
+        long mascotaId = cursor.getLong(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_MASCOTA_ID));
+        String mascotaNombre = "";
+        int indiceMascotaNombre = cursor.getColumnIndex("mascota_nombre");
+        if (indiceMascotaNombre >= 0) {
+            mascotaNombre = cursor.getString(indiceMascotaNombre);
+        }
+        String producto = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_PRODUCTO));
+        String fecha = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_FECHA));
+        String proximaFecha = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_PROXIMA_FECHA));
+        String observacion = cursor.getString(cursor.getColumnIndexOrThrow(DesparasitacionEntry.COLUMN_OBSERVACION));
+
+        return new Desparasitacion(
+                id,
+                mascotaId,
+                mascotaNombre,
+                producto,
+                fecha,
+                proximaFecha,
+                observacion == null ? "" : observacion
+        );
     }
 
     private String normalizarCorreo(String correo) {

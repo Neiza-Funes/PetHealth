@@ -17,7 +17,7 @@ Actualmente el proyecto cuenta con:
 - fotografía de la mascota desde la cámara;
 - registro, visualización y edición de controles;
 - registro, visualización y edición de vacunas;
-- módulo de desparasitación con formulario y pantalla de consulta, cuya persistencia completa en SQLite todavía se encuentra pendiente;
+- módulo de desparasitación con persistencia real en SQLite, asociado a la mascota correspondiente;
 - almacenamiento local mediante SQLite.
 
 ## Tecnologías utilizadas
@@ -30,6 +30,7 @@ Actualmente el proyecto cuenta con:
 - SQLiteOpenHelper
 - RecyclerView
 - SharedPreferences
+- ExecutorService
 
 ## Requisitos
 
@@ -48,8 +49,9 @@ La base de datos actual utiliza principalmente las tablas:
 - `mascotas`
 - `controles`
 - `vacunas`
+- `desparasitaciones`
 
-Las mascotas se relacionan con el usuario autenticado mediante `usuario_id`, mientras que controles y vacunas utilizan `mascota_id` para identificar a la mascota correspondiente. En la implementación actual estas relaciones se administran mediante identificadores usados por la aplicación; las sentencias de creación de las tablas no declaran restricciones `FOREIGN KEY` de SQLite.
+Las mascotas se relacionan con el usuario autenticado mediante `usuario_id`, mientras que controles, vacunas y desparasitaciones utilizan `mascota_id` para identificar a la mascota correspondiente. En la implementación actual estas relaciones se administran mediante identificadores usados por la aplicación; las sentencias de creación de las tablas no declaran restricciones `FOREIGN KEY` de SQLite.
 
 El modelo incluido en este avance se utiliza como representación conceptual de estas relaciones y respeta los campos principales existentes en el proyecto.
 
@@ -64,7 +66,7 @@ La estructura utilizada puede resumirse como:
 PetHealthContract → DatabaseHelper → SQLite
 ```
 
-El Contract representa el esquema que PetHealth ya utilizaba. No se cambiaron nombres de tablas o columnas, no se agregaron restricciones `FOREIGN KEY` y la versión de la base de datos continúa en `5`.
+El Contract representa el esquema utilizado por PetHealth. En el Avance 25 se agregó `DesparasitacionEntry` porque el módulo ahora posee una tabla real. No se agregaron restricciones `FOREIGN KEY` y la versión de la base de datos pasó a `6` únicamente por este cambio de esquema.
 
 
 ## Seguridad y buenas prácticas
@@ -80,7 +82,7 @@ En este avance se revisaron medidas básicas de seguridad sin cambiar la estruct
 - `LoginActivity` y `RegistroActivity` utilizan `FLAG_SECURE` por tratarse de pantallas donde se ingresan credenciales.
 - Las contraseñas se almacenan mediante hash SHA-256 dentro del alcance académico del proyecto; no se guardan contraseñas ni hashes en `SharedPreferences`.
 - `SessionManager` conserva únicamente los datos necesarios para identificar la sesión activa y los elimina al cerrar sesión.
-- Mascotas, controles y vacunas continúan filtrándose mediante `usuario_id` y `mascota_id` según corresponda.
+- Mascotas, controles, vacunas y desparasitaciones continúan filtrándose mediante `usuario_id` y `mascota_id` según corresponda.
 
 La fotografía de mascota se obtiene mediante `MediaStore.ACTION_IMAGE_CAPTURE` y PetHealth recibe el `Bitmap` devuelto por la aplicación de cámara. Luego la imagen se guarda dentro del almacenamiento privado de la aplicación. Como no se entrega una URI de archivo externa mediante `EXTRA_OUTPUT`, la implementación actual no necesita `FileProvider`. El permiso de cámara se mantiene porque el flujo actual lo comprueba y solicita antes de abrir la captura.
 
@@ -96,11 +98,11 @@ Además del flujo representado gráficamente, el proyecto actual permite acceder
 
 ## Modelo Entidad-Relación
 
-El modelo representa la estructura principal de persistencia usada actualmente por PetHealth: usuarios, mascotas, controles y vacunas.
+El modelo representa la estructura principal documentada anteriormente para PetHealth: usuarios, mascotas, controles y vacunas.
 
 ![Modelo Entidad-Relación de PetHealth](./docs/diagramas/PetHealth_MER_SQLite.png)
 
-La tabla de desparasitación no se incorpora en este modelo porque el Avance 21 todavía no implementa su persistencia completa en SQLite.
+En el Avance 25 se incorporó la tabla `desparasitaciones` a SQLite. El PNG del MER se mantiene sin cambios en este avance y se deja su actualización documental para el Avance 26.
 
 ## Instalación y ejecución
 
@@ -109,6 +111,10 @@ La tabla de desparasitación no se incorpora en este modelo porque el Avance 21 
 3. Esperar que Gradle termine de sincronizar.
 4. Ejecutar la aplicación en un emulador o dispositivo Android compatible.
 
-## Avance 24
+## Avance 25
 
-Este avance mantiene la organización mediante `PetHealthContract` e incorpora una revisión de seguridad básica. Se ajustó el Manifest para deshabilitar copias de respaldo y se agregó `FLAG_SECURE` en Login y Registro. También se revisaron consultas SQLite, cursores, sesión, contraseñas y el flujo actual de cámara sin cambiar `VERSION_BD = 5`, el esquema de las tablas ni las funcionalidades existentes.
+Este avance mantiene las medidas de seguridad incorporadas anteriormente y completa la persistencia del módulo de Desparasitación. Los registros ahora se guardan en SQLite y se relacionan con la mascota correspondiente mediante `mascota_id`.
+
+La base de datos utiliza `VERSION_BD = 6` porque se agregó únicamente la tabla `desparasitaciones`, mediante una migración que conserva usuarios, mascotas, controles y vacunas existentes.
+
+También se amplió de forma controlada el uso de `ExecutorService`: Controles mantiene sus operaciones en segundo plano, Desparasitación carga y elimina registros de forma asíncrona, y las consultas principales de Mis Mascotas y Vacunas también se ejecutan fuera del hilo principal antes de actualizar la interfaz.
