@@ -37,13 +37,15 @@
             android:textColor="@color/texto_secundario"
             android:textSize="15sp" />
 
+        <!-- Tarjeta del formulario con padding interno optimizado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_card"
             android:elevation="4dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"

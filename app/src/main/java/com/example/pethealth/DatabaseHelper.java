@@ -110,12 +110,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
 
-        // Conserva la corrección del Avance 20 para instalaciones antiguas que
-        // podían estar marcadas como versión 4 sin tener realmente foto_path.
         asegurarColumnaFotoMascota(db);
 
-        // Protección equivalente para el Avance 21: si una instalación quedó
-        // con un esquema incompleto, solo crea/agrega lo faltante y conserva datos.
+        // Protección equivalente para el Avance 21:
         asegurarEstructuraUsuariosYPropiedad(db);
     }
 

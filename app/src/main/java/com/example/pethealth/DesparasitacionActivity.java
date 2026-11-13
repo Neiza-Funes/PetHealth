@@ -3,58 +3,66 @@ package com.example.pethealth;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class DesparasitacionActivity extends Activity {
+
+    private DatabaseHelper databaseHelper;
+    private RecyclerView recyclerDesparasitacion;
+    private DesparasitacionAdapter desparasitacionAdapter;
+    private List<Control> listaDesparasitaciones; // O la entidad correspondiente a desparasitación
+
+    // ExecutorService para consultas asíncronas en segundo plano
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_desparasitacion);
 
-        Button btnRegistrarDesparasitacion = findViewById(R.id.btnRegistrarDesparasitacion);
-        LinearLayout cardDesparasitacionNueva = findViewById(R.id.cardDesparasitacionNueva);
-        TextView txtDesparasitacionMascotaNueva = findViewById(R.id.txtDesparasitacionMascotaNueva);
-        TextView txtDesparasitacionProductoNuevo = findViewById(R.id.txtDesparasitacionProductoNuevo);
-        TextView txtDesparasitacionFechaNueva = findViewById(R.id.txtDesparasitacionFechaNueva);
-        TextView txtDesparasitacionProximaNueva = findViewById(R.id.txtDesparasitacionProximaNueva);
-        TextView txtDesparasitacionObservacionNueva = findViewById(R.id.txtDesparasitacionObservacionNueva);
+        databaseHelper = new DatabaseHelper(this);
 
-        btnRegistrarDesparasitacion.setOnClickListener(v -> {
+        recyclerDesparasitacion = findViewById(R.id.recyclerDesparasitacion);
+        Button btnRegistrar = findViewById(R.id.btnRegistrarDesparasitacion);
+
+        recyclerDesparasitacion.setLayoutManager(new LinearLayoutManager(this));
+        listaDesparasitaciones = new ArrayList<>();
+
+        btnRegistrar.setOnClickListener(v -> {
             Intent intent = new Intent(DesparasitacionActivity.this, RegistrarDesparasitacionActivity.class);
             startActivity(intent);
         });
+    }
 
-        Intent intent = getIntent();
-        if (intent.hasExtra("mascotaDesparasitacion")) {
-            String mascota = intent.getStringExtra("mascotaDesparasitacion");
-            String producto = intent.getStringExtra("productoDesparasitacion");
-            String fecha = intent.getStringExtra("fechaDesparasitacion");
-            String proximaFecha = intent.getStringExtra("proximaDesparasitacion");
-            String observacion = intent.getStringExtra("observacionDesparasitacion");
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cargarDesparasitacionesAsincrono();
+    }
 
-            if (mascota != null && producto != null && fecha != null && proximaFecha != null) {
-                txtDesparasitacionMascotaNueva.setText(mascota);
-                txtDesparasitacionProductoNuevo.setText(
-                        getString(R.string.formato_producto_desparasitacion, producto));
-                txtDesparasitacionFechaNueva.setText(
-                        getString(R.string.formato_fecha_desparasitacion, fecha));
-                txtDesparasitacionProximaNueva.setText(
-                        getString(R.string.formato_proxima_desparasitacion, proximaFecha));
+    private void cargarDesparasitacionesAsincrono() {
+        executorService.execute(() -> {
+            // la consulta a base de datos en segundo plano
+            // List<Control> desparasitaciones = databaseHelper.obtenerDesparasitaciones();
 
-                if (observacion != null && !observacion.isEmpty()) {
-                    txtDesparasitacionObservacionNueva.setText(
-                            getString(R.string.formato_observacion_desparasitacion, observacion));
-                    txtDesparasitacionObservacionNueva.setVisibility(View.VISIBLE);
-                } else {
-                    txtDesparasitacionObservacionNueva.setVisibility(View.GONE);
-                }
-
-                cardDesparasitacionNueva.setVisibility(View.VISIBLE);
-            }
-        }
+            mainHandler.post(() -> {
+                // listaDesparasitaciones.clear();
+                // listaDesparasitaciones.addAll(desparasitaciones);
+                // desparasitacionAdapter.notifyDataSetChanged();
+            });
+        });
     }
 }

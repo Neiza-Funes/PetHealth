@@ -4,20 +4,32 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ControlesActivity extends Activity {
 
     private DatabaseHelper databaseHelper;
-    private LinearLayout contenedorControles;
+    private RecyclerView recyclerControles;
     private TextView txtSinProximosControles;
+    private ControlAdapter controlAdapter;
+    private final List<Control> listaControles = new ArrayList<>();
+
+    // ExecutorService para consultas asíncronas a la base de datos (Exigencia del profesor)
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +37,30 @@ public class ControlesActivity extends Activity {
         setContentView(R.layout.activity_controles);
 
         databaseHelper = new DatabaseHelper(this);
-        contenedorControles = findViewById(R.id.contenedorControles);
+        recyclerControles = findViewById(R.id.recyclerControles);
         txtSinProximosControles = findViewById(R.id.txtSinProximosControles);
+
+        // Configurar RecyclerView
+        recyclerControles.setLayoutManager(new LinearLayoutManager(this));
+
+        controlAdapter = new ControlAdapter(listaControles, new ControlAdapter.OnControlListener() {
+            @Override
+            public void onVerMascota(long mascotaId) {
+                abrirDetalleMascota(mascotaId);
+            }
+
+            @Override
+            public void onEditar(long controlId) {
+                abrirEdicionControl(controlId);
+            }
+
+            @Override
+            public void onEliminar(Control control) {
+                confirmarEliminacionControl(control);
+            }
+        }, databaseHelper, this);
+
+        recyclerControles.setAdapter(controlAdapter);
 
         Button btnVolver = findViewById(R.id.btnVolverInicioControles);
         Button btnRegistrarControl = findViewById(R.id.btnRegistrarControl);
@@ -41,56 +75,24 @@ public class ControlesActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        cargarControles();
+        cargarControlesAsincrono();
     }
 
-    private void cargarControles() {
-        contenedorControles.removeAllViews();
-        List<Control> controles = databaseHelper.obtenerProximosControles();
+    private void cargarControlesAsincrono() {
+        // Ejecución en segundo plano para no congelar el hilo principal
+        executorService.execute(() -> {
+            List<Control> controles = databaseHelper.obtenerProximosControles();
 
-        int controlesMostrados = 0;
-        LayoutInflater inflater = LayoutInflater.from(this);
+            mainHandler.post(() -> {
+                listaControles.clear();
+                listaControles.addAll(controles);
+                controlAdapter.notifyDataSetChanged();
 
-        for (Control control : controles) {
-            Mascota mascota = databaseHelper.obtenerMascotaPorId(control.getMascotaId());
-            if (mascota == null) {
-                continue;
-            }
-
-            View tarjeta = inflater.inflate(R.layout.item_control, contenedorControles, false);
-            TextView txtMascota = tarjeta.findViewById(R.id.txtItemControlMascota);
-            TextView txtTipo = tarjeta.findViewById(R.id.txtItemControlTipo);
-            TextView txtFecha = tarjeta.findViewById(R.id.txtItemControlFecha);
-            TextView txtEstado = tarjeta.findViewById(R.id.txtItemControlEstado);
-            TextView txtObservacion = tarjeta.findViewById(R.id.txtItemControlObservacion);
-            Button btnVerMascota = tarjeta.findViewById(R.id.btnItemControlVerMascota);
-            Button btnEditar = tarjeta.findViewById(R.id.btnItemControlEditar);
-            Button btnEliminar = tarjeta.findViewById(R.id.btnItemControlEliminar);
-
-            txtMascota.setText(mascota.getNombre());
-            txtTipo.setText(getString(R.string.formato_tipo_control, control.getTipo()));
-            txtFecha.setText(getString(R.string.formato_fecha_control, control.getFecha()));
-            txtEstado.setText(getString(R.string.formato_estado_control, control.getEstado()));
-
-            if (control.getObservacion().isEmpty()) {
-                txtObservacion.setVisibility(View.GONE);
-            } else {
-                txtObservacion.setText(
-                        getString(R.string.formato_observacion_control, control.getObservacion()));
-                txtObservacion.setVisibility(View.VISIBLE);
-            }
-
-            btnVerMascota.setOnClickListener(v -> abrirDetalleMascota(control.getMascotaId()));
-            btnEditar.setOnClickListener(v -> abrirEdicionControl(control.getId()));
-            btnEliminar.setOnClickListener(v -> confirmarEliminacionControl(control));
-
-            contenedorControles.addView(tarjeta);
-            controlesMostrados++;
-        }
-
-        boolean vacio = controlesMostrados == 0;
-        txtSinProximosControles.setVisibility(vacio ? View.VISIBLE : View.GONE);
-        contenedorControles.setVisibility(vacio ? View.GONE : View.VISIBLE);
+                boolean vacio = controles.isEmpty();
+                txtSinProximosControles.setVisibility(vacio ? View.VISIBLE : View.GONE);
+                recyclerControles.setVisibility(vacio ? View.GONE : View.VISIBLE);
+            });
+        });
     }
 
     private void abrirDetalleMascota(long mascotaId) {
@@ -115,18 +117,26 @@ public class ControlesActivity extends Activity {
     }
 
     private void eliminarControl(long controlId) {
-        boolean eliminado = databaseHelper.eliminarControl(controlId);
-        if (!eliminado) {
-            Toast.makeText(this, R.string.toast_error_eliminar_control, Toast.LENGTH_SHORT).show();
-            return;
-        }
+        executorService.execute(() -> {
+            boolean eliminado = databaseHelper.eliminarControl(controlId);
 
-        Toast.makeText(this, R.string.toast_control_eliminado, Toast.LENGTH_SHORT).show();
-        cargarControles();
+            mainHandler.post(() -> {
+                if (!eliminado) {
+                    Toast.makeText(this, R.string.toast_error_eliminar_control, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Toast.makeText(this, R.string.toast_control_eliminado, Toast.LENGTH_SHORT).show();
+                cargarControlesAsincrono();
+            });
+        });
     }
 
     @Override
     protected void onDestroy() {
+        if (executorService != null) {
+            executorService.shutdown();
+        }
         if (databaseHelper != null) {
             databaseHelper.close();
         }
